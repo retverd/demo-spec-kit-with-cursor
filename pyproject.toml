@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cbr-exchange-rate-extractor"
+version = "0.1.0"
+description = "Extract RUB/USD exchange rate data from CBR and save to Parquet file"
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = [
+    "requests>=2.31.0",
+    "pyarrow>=14.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4.0",
+    "pytest-mock>=3.11.0",
+]
+
+[project.scripts]
+extract-cbr-rates = "src.cli.main:main"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = "-v --tb=short"
+
