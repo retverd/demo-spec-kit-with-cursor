@@ -2,6 +2,8 @@
 
 Auto-generated from all feature plans. Last updated: [DATE]
 
+> **Примечание**: Согласно конституции проекта, все руководства и документация должны быть написаны на русском языке.
+
 ## Active Technologies
 
 [EXTRACTED FROM ALL PLAN.MD FILES]

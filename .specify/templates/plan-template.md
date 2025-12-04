@@ -5,6 +5,8 @@
 
 **Note**: This template is filled in by the `/speckit.plan` command. See `.specify/templates/commands/plan.md` for the execution workflow.
 
+> **Примечание**: Согласно конституции проекта, все планы и спецификации должны быть написаны на русском языке.
+
 ## Summary
 
 [Extract from feature spec: primary requirement + technical approach from research]

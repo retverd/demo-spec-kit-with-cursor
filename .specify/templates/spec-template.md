@@ -5,6 +5,8 @@
 **Status**: Draft  
 **Input**: User description: "$ARGUMENTS"
 
+> **Примечание**: Согласно конституции проекта, все спецификации должны быть написаны на русском языке.
+
 ## User Scenarios & Testing *(mandatory)*
 
 <!--
