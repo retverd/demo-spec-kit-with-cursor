@@ -1,0 +1,26 @@
+# demo-spec-kit-with-cursor Development Guidelines
+
+Auto-generated from all feature plans. Last updated: 2025-12-02
+
+## Active Technologies
+
+- Python 3.14 + requests (HTTP client), pyarrow (Parquet operations), datetime (stdlib, date handling) (001-cbr-exchange-rate)
+- Parquet files (local filesystem) (001-cbr-exchange-rate)
+
+## Project Structure
+
+```text
+src/
+tests/
+```
+
+## Commands
+
+cd src; pytest; ruff check .
+
+## Code Style
+
+Python 3.14: Follow standard conventions
+
+<!-- MANUAL ADDITIONS START -->
+<!-- MANUAL ADDITIONS END -->
