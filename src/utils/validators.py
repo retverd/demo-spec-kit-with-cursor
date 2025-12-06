@@ -1,8 +1,10 @@
 """Data validation functions for exchange rate records."""
 
 from datetime import date, timedelta
-from typing import List, Optional
+from math import isnan
+from typing import List, Optional, Union
 
+from src.models.candles import CandleRecord
 from src.models.exchange_rate import ExchangeRateRecord
 
 
@@ -90,6 +92,71 @@ def validate_records(records: List[ExchangeRateRecord], period_start: date, peri
     expected_dates = {period_start + timedelta(days=i) for i in range(7)}
     if dates_seen != expected_dates:
         missing = expected_dates - dates_seen
+        return False, f"Missing dates in records: {missing}"
+    
+    return True, None
+
+
+def _is_non_negative_number(value: Union[int, float]) -> bool:
+    """Check that value is a number >= 0 and not NaN."""
+    try:
+        numeric = float(value)
+    except (TypeError, ValueError):
+        return False
+    if isnan(numeric):
+        return False
+    return numeric >= 0
+
+
+def validate_candles(
+    records: List[CandleRecord],
+    start_date: date,
+    end_date: date
+) -> tuple[bool, Optional[str]]:
+    """
+    Validate OHLCV candle records for the LQDT/TQTF 7-day period.
+    
+    Checks:
+    1. Count matches the expected day span.
+    2. Dates are unique and within [start_date, end_date].
+    3. Prices/volume are non-negative numbers when present.
+    4. Instrument and board match expected values.
+    5. All dates in the period are present.
+    
+    Returns:
+        (is_valid, error_message)
+    """
+    if start_date > end_date:
+        return False, "Start date is after end date"
+    
+    expected_days = (end_date - start_date).days + 1
+    if len(records) != expected_days:
+        return False, f"Expected {expected_days} records, got {len(records)}"
+    
+    dates_seen = set()
+    for record in records:
+        if not validate_date(record.date, start_date, end_date):
+            return False, f"Date {record.date} is outside the expected period [{start_date}, {end_date}]"
+        
+        if record.date in dates_seen:
+            return False, f"Duplicate date found: {record.date}"
+        dates_seen.add(record.date)
+        
+        if record.instrument != "LQDT":
+            return False, f"Invalid instrument: {record.instrument}"
+        if record.board != "TQTF":
+            return False, f"Invalid board: {record.board}"
+        
+        for field_name in ("open", "high", "low", "close", "volume"):
+            value = getattr(record, field_name)
+            if value is None:
+                continue
+            if not _is_non_negative_number(value):
+                return False, f"Invalid {field_name} value for date {record.date}: {value}"
+    
+    expected_dates = {start_date + timedelta(days=i) for i in range(expected_days)}
+    if dates_seen != expected_dates:
+        missing = sorted(expected_dates - dates_seen)
         return False, f"Missing dates in records: {missing}"
     
     return True, None

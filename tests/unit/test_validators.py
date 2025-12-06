@@ -4,8 +4,14 @@ from datetime import date, timedelta
 
 import pytest
 
+from src.models.candles import CandleRecord
 from src.models.exchange_rate import ExchangeRateRecord
-from src.utils.validators import validate_date, validate_rate, validate_records
+from src.utils.validators import (
+    validate_candles,
+    validate_date,
+    validate_rate,
+    validate_records,
+)
 
 
 class TestValidateDate:
@@ -115,6 +121,130 @@ class TestValidateRecords:
         is_valid, error = validate_records(records, period_start, period_end)
         assert is_valid is False
         assert "Expected 7 records" in error
+
+
+class TestValidateCandles:
+    """Tests for validate_candles function."""
+    
+    def test_valid_candles(self):
+        """Valid 7-day candle set passes validation."""
+        start_date = date(2025, 11, 25)
+        end_date = date(2025, 12, 1)
+        records = [
+            CandleRecord(
+                date=start_date + timedelta(days=i),
+                open=100.0 + i,
+                high=101.0 + i,
+                low=99.0 + i,
+                close=100.5 + i,
+                volume=1000 + i,
+            )
+            for i in range(7)
+        ]
+        
+        is_valid, error = validate_candles(records, start_date, end_date)
+        assert is_valid is True
+        assert error is None
+    
+    def test_missing_date(self):
+        """Fail when a date from the period is missing."""
+        start_date = date(2025, 11, 25)
+        end_date = date(2025, 12, 1)
+        records = [
+            CandleRecord(
+                date=start_date + timedelta(days=i),
+                open=None,
+                high=None,
+                low=None,
+                close=None,
+                volume=None,
+            )
+            for i in range(6)
+        ]
+        
+        is_valid, error = validate_candles(records, start_date, end_date)
+        assert is_valid is False
+        assert "Expected 7 records" in error
+    
+    def test_negative_value(self):
+        """Negative prices or volume should fail validation."""
+        start_date = date(2025, 11, 25)
+        end_date = date(2025, 12, 1)
+        records = [
+            CandleRecord(
+                date=start_date + timedelta(days=i),
+                open=-1.0 if i == 0 else 1.0,
+                high=2.0,
+                low=0.5,
+                close=1.5,
+                volume=100.0,
+            )
+            for i in range(7)
+        ]
+        
+        is_valid, error = validate_candles(records, start_date, end_date)
+        assert is_valid is False
+        assert "Invalid open value" in error
+    
+    def test_wrong_board_or_instrument(self):
+        """Unexpected instrument/board should fail."""
+        start_date = date(2025, 11, 25)
+        end_date = date(2025, 12, 1)
+        records = [
+            CandleRecord(
+                date=start_date + timedelta(days=i),
+                open=1.0,
+                high=2.0,
+                low=0.5,
+                close=1.5,
+                volume=100.0,
+                instrument="WRONG" if i == 0 else "LQDT",
+                board="TQBR" if i == 1 else "TQTF",
+            )
+            for i in range(7)
+        ]
+        
+        is_valid, error = validate_candles(records, start_date, end_date)
+        assert is_valid is False
+        assert "Invalid instrument" in error or "Invalid board" in error
+    
+    def test_duplicate_date(self):
+        """Duplicate date should be rejected."""
+        start_date = date(2025, 11, 25)
+        end_date = date(2025, 12, 1)
+        records = [
+            CandleRecord(
+                date=start_date,
+                open=1.0,
+                high=2.0,
+                low=0.5,
+                close=1.5,
+                volume=100.0,
+            )
+        ] + [
+            CandleRecord(
+                date=start_date + timedelta(days=i),
+                open=1.0,
+                high=2.0,
+                low=0.5,
+                close=1.5,
+                volume=100.0,
+            )
+            for i in range(1, 7)
+        ]
+        # introduce duplicate of start_date
+        records[1] = CandleRecord(
+            date=start_date,
+            open=1.0,
+            high=2.0,
+            low=0.5,
+            close=1.5,
+            volume=100.0,
+        )
+        
+        is_valid, error = validate_candles(records, start_date, end_date)
+        assert is_valid is False
+        assert "Duplicate date" in error
     
     def test_invalid_too_many_records(self):
         """Test that more than 7 records fails validation."""

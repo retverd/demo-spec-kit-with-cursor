@@ -1,4 +1,4 @@
-## Tasks: Извлечение дневных свечей LQDT с Московской биржи
+# Tasks: Извлечение дневных свечей LQDT с Московской биржи
 
 **Input**: Дизайн-документы из `/specs/002-moscow-exchange-candles/`  
 **Prerequisites**: plan.md (обязателен), spec.md (обязателен для пользовательских историй), research.md, data-model.md, contracts/
@@ -26,9 +26,9 @@
 
 **Назначение**: Подготовка документации и инфраструктуры фичи до реализации кода
 
-- [ ] T001 Создать файл исследования `specs/002-moscow-exchange-candles/research.md` и описать выбранный эндпоинт ISS‑API Мосбиржи для дневных свечей LQDT/TQTF (URL, параметры, формат ответа)
-- [ ] T002 [P] Задокументировать в `specs/002-moscow-exchange-candles/research.md` маппинг полей ответа API Мосбиржи в целевые поля свечей и колонок XLSX (`Date, Open, High, Low, Close, Volume`)
-- [ ] T003 [P] Создать заготовки файлов документации `specs/002-moscow-exchange-candles/data-model.md` и `specs/002-moscow-exchange-candles/quickstart.md`, а также каталог `specs/002-moscow-exchange-candles/contracts/` для контрактов
+- [X] T001 Создать файл исследования `specs/002-moscow-exchange-candles/research.md` и описать выбранный эндпоинт ISS‑API Мосбиржи для дневных свечей LQDT/TQTF (URL, параметры, формат ответа)
+- [X] T002 [P] Задокументировать в `specs/002-moscow-exchange-candles/research.md` маппинг полей ответа API Мосбиржи в целевые поля свечей и колонок XLSX (`Date, Open, High, Low, Close, Volume`)
+- [X] T003 [P] Создать заготовки файлов документации `specs/002-moscow-exchange-candles/data-model.md` и `specs/002-moscow-exchange-candles/quickstart.md`, а также каталог `specs/002-moscow-exchange-candles/contracts/` для контрактов
 
 ---
 
@@ -38,12 +38,12 @@
 
 **⚠️ КРИТИЧЕСКОЕ УСЛОВИЕ**: Работа над пользовательскими историями не начинается до завершения этой фазы
 
-- [ ] T004 Описать контракт Moex API в `specs/002-moscow-exchange-candles/contracts/moex-api-contract.md` (конкретный URL для дневных свечей LQDT/TQTF, параметры запросов, примеры успешных/ошибочных ответов)
-- [ ] T005 [P] Описать CLI‑контракт для подкоманды `moex-lqdt` в `specs/002-moscow-exchange-candles/contracts/cli-contract.md` (аргументы, коды выхода, формат сообщений об ошибках, примеры запуска)
-- [ ] T006 [P] Заполнить `specs/002-moscow-exchange-candles/quickstart.md` сценариями быстрого запуска CLI для режима `moex-lqdt` с ожидаемыми результатами
-- [ ] T007 Обновить зависимости в корневом `requirements.txt`, добавив библиотеку для записи XLSX (`openpyxl` или `xlsxwriter`) с подходящей версией
-- [ ] T008 [P] Добавить функцию `validate_candles(records, start_date, end_date)` в `src/utils/validators.py` по правилам из `data-model.md` (покрытие всех 7 дат, неотрицательные цены/объёмы и т.п.)
-- [ ] T009 [P] Добавить юнит‑тесты для `validate_candles` в `tests/unit/test_validators.py` (корректный период из 7 дней, пропуски в данных, отрицательные значения и другие граничные случаи)
+- [X] T004 Описать контракт Moex API в `specs/002-moscow-exchange-candles/contracts/moex-api-contract.md` (конкретный URL для дневных свечей LQDT/TQTF, параметры запросов, примеры успешных/ошибочных ответов)
+- [X] T005 [P] Описать CLI‑контракт для подкоманды `moex-lqdt` в `specs/002-moscow-exchange-candles/contracts/cli-contract.md` (аргументы, коды выхода, формат сообщений об ошибках, примеры запуска)
+- [X] T006 [P] Заполнить `specs/002-moscow-exchange-candles/quickstart.md` сценариями быстрого запуска CLI для режима `moex-lqdt` с ожидаемыми результатами
+- [X] T007 Обновить зависимости в корневом `requirements.txt`, добавив библиотеку для записи XLSX (`openpyxl` или `xlsxwriter`) с подходящей версией
+- [X] T008 [P] Добавить функцию `validate_candles(records, start_date, end_date)` в `src/utils/validators.py` по правилам из `data-model.md` (покрытие всех 7 дат, неотрицательные цены/объёмы и т.п.)
+- [X] T009 [P] Добавить юнит‑тесты для `validate_candles` в `tests/unit/test_validators.py` (корректный период из 7 дней, пропуски в данных, отрицательные значения и другие граничные случаи)
 
 **Checkpoint**: Базовые контрактные документы, зависимости и валидация готовы — можно начинать реализацию пользовательских историй
 
@@ -59,17 +59,17 @@
 
 > **NOTE**: Сначала написать тесты, убедиться, что они падают, затем реализовывать код
 
-- [ ] T010 [P] [US1] Создать юнит‑тесты успешного получения дневных свечей в `tests/unit/test_moex_client.py` с моками `requests.Session.get`, проверяющие корректное маппирование полей OHLCV и количество записей за 7 дней
-- [ ] T011 [P] [US1] Добавить юнит‑тесты обработки ошибок API (HTTP 4xx/5xx, неверный инструмент/доска) в `tests/unit/test_moex_client.py`, ожидая понятные сообщения и соответствующие реакции клиента
-- [ ] T012 [P] [US1] Добавить юнит‑тесты обработки сетевых таймаутов и ошибок подключения в `tests/unit/test_moex_client.py`, проверяя корректную классификацию ошибок для последующего маппинга в коды выхода CLI
+- [X] T010 [P] [US1] Создать юнит‑тесты успешного получения дневных свечей в `tests/unit/test_moex_client.py` с моками `requests.Session.get`, проверяющие корректное маппирование полей OHLCV и количество записей за 7 дней
+- [X] T011 [P] [US1] Добавить юнит‑тесты обработки ошибок API (HTTP 4xx/5xx, неверный инструмент/доска) в `tests/unit/test_moex_client.py`, ожидая понятные сообщения и соответствующие реакции клиента
+- [X] T012 [P] [US1] Добавить юнит‑тесты обработки сетевых таймаутов и ошибок подключения в `tests/unit/test_moex_client.py`, проверяя корректную классификацию ошибок для последующего маппинга в коды выхода CLI
 
 ### Implementation for User Story 1
 
-- [ ] T013 [P] [US1] Создать модель `CandleRecord` в `src/models/candles.py` с полями `date, open, high, low, close, volume, instrument, board` согласно `data-model.md`
-- [ ] T014 [US1] Реализовать класс `MoexClient` и метод `get_daily_candles(start_date, end_date)` в `src/services/moex_client.py` в соответствии с контрактом `specs/002-moscow-exchange-candles/contracts/moex-api-contract.md`
-- [ ] T015 [US1] Реализовать преобразование ответа ISS‑API Мосбиржи в список `CandleRecord` в `src/services/moex_client.py`, гарантируя ровно одну запись на каждую дату периода и заполнение отсутствующих дней `None`‑значениями
-- [ ] T016 [US1] Реализовать обработку ошибок HTTP и сетевых сбоев в `src/services/moex_client.py` (отдельные ветки для таймаута, недоступности API, некорректного ответа) с генерацией информативных ошибок для верхнего уровня
-- [ ] T017 [US1] Добавить логирование ключевых шагов получения свечей (URL, период, количество записей, коды ошибок) в `src/services/moex_client.py` с использованием стандартного модуля `logging`
+- [X] T013 [P] [US1] Создать модель `CandleRecord` в `src/models/candles.py` с полями `date, open, high, low, close, volume, instrument, board` согласно `data-model.md`
+- [X] T014 [US1] Реализовать класс `MoexClient` и метод `get_daily_candles(start_date, end_date)` в `src/services/moex_client.py` в соответствии с контрактом `specs/002-moscow-exchange-candles/contracts/moex-api-contract.md`
+- [X] T015 [US1] Реализовать преобразование ответа ISS‑API Мосбиржи в список `CandleRecord` в `src/services/moex_client.py`, гарантируя ровно одну запись на каждую дату периода и заполнение отсутствующих дней `None`‑значениями
+- [X] T016 [US1] Реализовать обработку ошибок HTTP и сетевых сбоев в `src/services/moex_client.py` (отдельные ветки для таймаута, недоступности API, некорректного ответа) с генерацией информативных ошибок для верхнего уровня
+- [X] T017 [US1] Добавить логирование ключевых шагов получения свечей (URL, период, количество записей, коды ошибок) в `src/services/moex_client.py` с использованием стандартного модуля `logging`
 
 **Checkpoint**: Пользовательская история 1 полностью реализована и может тестироваться независимо (по крайней мере на уровне клиента и сервисного слоя с моками HTTP)
 
@@ -83,19 +83,19 @@
 
 ### Tests for User Story 2
 
-- [ ] T018 [P] [US2] Создать юнит‑тесты успешной записи XLSX в `tests/unit/test_xlsx_writer.py`, проверяющие наличие листа с колонками `Date, Open, High, Low, Close, Volume` и 7 строками по датам периода
-- [ ] T019 [P] [US2] Добавить юнит‑тесты обработки `None`‑значений и пропущенных дней в `tests/unit/test_xlsx_writer.py`, проверяющие, что в выходном файле соответствующие ячейки остаются пустыми
-- [ ] T020 [P] [US2] Добавить юнит‑тесты генерации имени файла по шаблону `lqdt_tqtf_{period_start}_to_{period_end}_{report_date}_{HHMMSS}.xlsx` в `tests/unit/test_xlsx_writer.py`
+- [X] T018 [P] [US2] Создать юнит‑тесты успешной записи XLSX в `tests/unit/test_xlsx_writer.py`, проверяющие наличие листа с колонками `Date, Open, High, Low, Close, Volume` и 7 строками по датам периода
+- [X] T019 [P] [US2] Добавить юнит‑тесты обработки `None`‑значений и пропущенных дней в `tests/unit/test_xlsx_writer.py`, проверяющие, что в выходном файле соответствующие ячейки остаются пустыми
+- [X] T020 [P] [US2] Добавить юнит‑тесты генерации имени файла по шаблону `lqdt_tqtf_{period_start}_to_{period_end}_{report_date}_{HHMMSS}.xlsx` в `tests/unit/test_xlsx_writer.py`
 
 ### Implementation for User Story 2
 
-- [ ] T021 [P] [US2] Реализовать класс `XLSXWriter` и метод `write_candles(records, output_dir)` в `src/services/xlsx_writer.py` с использованием выбранной библиотеки (`openpyxl` или `xlsxwriter`)
-- [ ] T022 [US2] Реализовать в `src/services/xlsx_writer.py` генерацию имени файла по шаблону `lqdt_tqtf_{period_start}_to_{period_end}_{report_date}_{HHMMSS}.xlsx` с использованием текущей даты/времени и параметров периода
-- [ ] T023 [US2] Реализовать в `src/services/xlsx_writer.py` запись данных в XLSX: одна строка на каждый день периода, колонки `Date, Open, High, Low, Close, Volume`, преобразование `None` в пустые ячейки
-- [ ] T024 [US2] Добавить в `src/services/xlsx_writer.py` обработку ошибок файловой системы (нет прав, диск заполнен и т.п.) с выбросом `IOError` и логированием
-- [ ] T025 [US2] Расширить существующий CLI в `src/cli/main.py`, добавив подкоманду `moex-lqdt` на основе контракта `specs/002-moscow-exchange-candles/contracts/cli-contract.md`
-- [ ] T026 [US2] Реализовать в подкоманде `moex-lqdt` последовательность: расчёт периода через `get_last_7_days()` из `src/utils/date_utils.py`, вызов `MoexClient.get_daily_candles(...)`, вызов `validate_candles(...)`, подготовка значений для имени файла (`period_start, period_end, текущая дата и время`)
-- [ ] T027 [US2] Настроить в `src/cli/main.py` коды выхода и вывод сообщений об ошибках на русском языке для подкоманды `moex-lqdt` (успех, ошибка API, таймаут/сеть, некорректные данные, ошибка ФС, ошибка валидации) в соответствии с контрактом CLI и требованиями FR‑007/SC‑004
+- [X] T021 [P] [US2] Реализовать класс `XLSXWriter` и метод `write_candles(records, output_dir)` в `src/services/xlsx_writer.py` с использованием выбранной библиотеки (`openpyxl` или `xlsxwriter`)
+- [X] T022 [US2] Реализовать в `src/services/xlsx_writer.py` генерацию имени файла по шаблону `lqdt_tqtf_{period_start}_to_{period_end}_{report_date}_{HHMMSS}.xlsx` с использованием текущей даты/времени и параметров периода
+- [X] T023 [US2] Реализовать в `src/services/xlsx_writer.py` запись данных в XLSX: одна строка на каждый день периода, колонки `Date, Open, High, Low, Close, Volume`, преобразование `None` в пустые ячейки
+- [X] T024 [US2] Добавить в `src/services/xlsx_writer.py` обработку ошибок файловой системы (нет прав, диск заполнен и т.п.) с выбросом `IOError` и логированием
+- [X] T025 [US2] Расширить существующий CLI в `src/cli/main.py`, добавив подкоманду `moex-lqdt` на основе контракта `specs/002-moscow-exchange-candles/contracts/cli-contract.md`
+- [X] T026 [US2] Реализовать в подкоманде `moex-lqdt` последовательность: расчёт периода через `get_last_7_days()` из `src/utils/date_utils.py`, вызов `MoexClient.get_daily_candles(...)`, вызов `validate_candles(...)`, подготовка значений для имени файла (`period_start, period_end, текущая дата и время`)
+- [X] T027 [US2] Настроить в `src/cli/main.py` коды выхода и вывод сообщений об ошибках на русском языке для подкоманды `moex-lqdt` (успех, ошибка API, таймаут/сеть, некорректные данные, ошибка ФС, ошибка валидации) в соответствии с контрактом CLI и требованиями FR‑007/SC‑004
 
 **Checkpoint**: Пользовательские истории 1 И 2 реализованы и могут тестироваться независимо — есть полный путь от получения данных до сохранения XLSX‑файла
 
@@ -105,9 +105,9 @@
 
 **Назначение**: Проверка, что вся система для сценария LQDT/TQTF→XLSX работает end‑to‑end и корректно обрабатывает ошибки
 
-- [ ] T028 [P] Добавить интеграционный end‑to‑end тест успешного сценария `moex-lqdt` в `tests/integration/test_end_to_end.py` с моками API Мосбиржи (код выхода 0, наличие XLSX‑файла, корректное количество строк и колонок)
-- [ ] T029 [P] Добавить интеграционные тесты в `tests/integration/test_end_to_end.py` для сценариев ошибок API/сети и ошибок записи файла XLSX, проверяя ненулевые коды выхода и сообщения об ошибках
-- [ ] T030 [P] Добавить интеграционный тест в `tests/integration/test_end_to_end.py`, проверяющий поведение при отсутствии данных за часть периода и нерабочих днях (выходной XLSX содержит строки для всех 7 дат с NULL/пустыми значениями там, где данных нет)
+- [X] T028 [P] Добавить интеграционный end‑to‑end тест успешного сценария `moex-lqdt` в `tests/integration/test_end_to_end.py` с моками API Мосбиржи (код выхода 0, наличие XLSX‑файла, корректное количество строк и колонок)
+- [X] T029 [P] Добавить интеграционные тесты в `tests/integration/test_end_to_end.py` для сценариев ошибок API/сети и ошибок записи файла XLSX, проверяя ненулевые коды выхода и сообщения об ошибках
+- [X] T030 [P] Добавить интеграционный тест в `tests/integration/test_end_to_end.py`, проверяющий поведение при отсутствии данных за часть периода и нерабочих днях (выходной XLSX содержит строки для всех 7 дат с NULL/пустыми значениями там, где данных нет)
 
 ---
 
