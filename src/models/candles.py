@@ -9,7 +9,7 @@ from typing import Optional
 class CandleRecord:
     """
     Represents a single day's OHLCV candle for LQDT on board TQTF.
-    
+
     Attributes:
         date: Calendar date of the candle.
         open: Opening price (None if no data).
@@ -20,6 +20,7 @@ class CandleRecord:
         instrument: Instrument identifier, defaults to "LQDT".
         board: Board identifier, defaults to "TQTF".
     """
+
     date: date
     open: Optional[float]
     high: Optional[float]
@@ -28,5 +29,3 @@ class CandleRecord:
     volume: Optional[float]
     instrument: str = "LQDT"
     board: str = "TQTF"
-
-

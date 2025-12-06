@@ -50,16 +50,16 @@ def test_write_creates_xlsx_with_headers_and_rows(tmp_path):
         period_end=records[-1].date,
         report_date=date(2025, 12, 5),
     )
-    
+
     assert os.path.exists(filename)
     wb = openpyxl.load_workbook(filename)
     sheet = wb.active
-    
+
     headers = [cell.value for cell in sheet[1]]
     assert headers == ["Date", "Open", "High", "Low", "Close", "Volume"]
     # 1 header row + 7 data rows
     assert sheet.max_row == 8
-    
+
     first_data_row = [cell.value for cell in sheet[2]]
     assert first_data_row[0] == records[0].date.isoformat()
     assert first_data_row[1] == records[0].open
@@ -75,7 +75,7 @@ def test_write_handles_none_values_as_empty_cells(tmp_path):
         period_end=records[-1].date,
         report_date=date(2025, 12, 5),
     )
-    
+
     wb = openpyxl.load_workbook(filename)
     sheet = wb.active
     second_data_row = [cell.value for cell in sheet[3]]  # 3rd row: second record
@@ -94,8 +94,7 @@ def test_filename_pattern_contains_period_and_report_date(tmp_path):
         period_end=records[-1].date,
         report_date=date(2025, 12, 5),
     )
-    
+
     basename = os.path.basename(filename)
     assert basename.startswith("lqdt_tqtf_2025-11-28_to_2025-12-04_2025-12-05_")
     assert basename.endswith(".xlsx")
-
