@@ -52,9 +52,9 @@
 - Когда API Мосбиржи временно недоступен или возвращает ошибку, система выводит понятное сообщение об ошибке в консоль и возвращает ненулевой код выхода
 - Когда данные о свечах отсутствуют для одного или нескольких дней в запрошенном периоде, система создает файл XLSX со строками для всех дат в периоде, где отсутствующие дни имеют значения NULL
 - Когда запрошенный период включает выходные дни или праздники, когда торговля не ведется, система создает файл XLSX со строками для всех дат в периоде, где дни без торговли имеют значения NULL
-- Как система обрабатывает сетевые таймауты или сбои подключения во время извлечения данных?
-- Что происходит, если файловая система заполнена или отсутствуют права на запись при сохранении файла XLSX?
-- Как система обрабатывает невалидные или некорректно сформированные данные, возвращенные из API Мосбиржи?
+- Когда во время извлечения данных возникает сетевой таймаут или сбой подключения, система выводит понятное сообщение об ошибке на русском языке в консоль и завершает работу с ненулевым кодом выхода в соответствии с FR-007 и SC-004
+- Когда файловая система заполнена или отсутствуют права на запись при сохранении файла XLSX, система выводит понятное сообщение об ошибке на русском языке в консоль и завершает работу с ненулевым кодом выхода, соответствующим ошибке файловой системы, не создавая частично записанных или повреждённых файлов
+- Когда API Мосбиржи возвращает невалидные или некорректно сформированные данные, система рассматривает такой ответ как ошибочный, логирует проблему, выводит понятное сообщение об ошибке на русском языке и завершает работу с ненулевым кодом выхода в соответствии с FR-007 и FR-009
 - Когда система запускается несколько раз для одного и того же периода, она создает новый файл с именем, включающим период дат и временную метку извлечения (например, `lqdt_tqtf_2025-11-25_to_2025-12-01_2025-12-02_143022.xlsx`) для сохранения истории запусков
 - Когда инструмент LQDT не найден на доске TQTF или не имеет данных за запрошенный период, система выводит понятное сообщение об ошибке в консоль и возвращает ненулевой код выхода
 
@@ -76,7 +76,10 @@
 ### Key Entities *(include if feature involves data)*
 
 - **Candle Record**: Represents a single day's OHLCV candle data. Key attributes: date (the calendar date for this candle), open (opening price as a numeric value), high (highest price as a numeric value), low (lowest price as a numeric value), close (closing price as a numeric value), volume (trading volume as a numeric value, which may be null/zero for missing days), instrument (identifier for LQDT), board (identifier for TQTF). The XLSX file MUST contain exactly one row per day in the 7-day period, with missing days having empty or null values.
-- **Extraction Metadata**: Represents information about the data extraction process. Key attributes: extraction_date (the date when the extraction was performed), period_start (the earliest date in the data period), period_end (the latest date in the data period), data_source (identifier for Moscow Exchange API as the source), instrument (LQDT), board (TQTF). This metadata may be included in the XLSX file as a separate sheet or header information, or stored as file properties/metadata accessible via XLSX file metadata API.
+
+### Localization Requirements
+
+- **LR-001**: Все пользовательские сообщения (включая сообщения об ошибках и вывод CLI) для функциональности извлечения и сохранения свечей LQDT/TQTF ДОЛЖНЫ быть на русском языке в соответствии с Принципом 6 конституции проекта.
 
 ## Success Criteria *(mandatory)*
 

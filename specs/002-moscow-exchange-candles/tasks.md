@@ -85,17 +85,17 @@
 
 - [ ] T018 [P] [US2] Создать юнит‑тесты успешной записи XLSX в `tests/unit/test_xlsx_writer.py`, проверяющие наличие листа с колонками `Date, Open, High, Low, Close, Volume` и 7 строками по датам периода
 - [ ] T019 [P] [US2] Добавить юнит‑тесты обработки `None`‑значений и пропущенных дней в `tests/unit/test_xlsx_writer.py`, проверяющие, что в выходном файле соответствующие ячейки остаются пустыми
-- [ ] T020 [P] [US2] Добавить юнит‑тесты генерации имени файла и записи метаданных в `tests/unit/test_xlsx_writer.py`, проверяя шаблон `lqdt_tqtf_{period_start}_to_{period_end}_{report_date}_{HHMMSS}.xlsx`
+- [ ] T020 [P] [US2] Добавить юнит‑тесты генерации имени файла по шаблону `lqdt_tqtf_{period_start}_to_{period_end}_{report_date}_{HHMMSS}.xlsx` в `tests/unit/test_xlsx_writer.py`
 
 ### Implementation for User Story 2
 
-- [ ] T021 [P] [US2] Реализовать класс `XLSXWriter` и метод `write_candles(records, metadata, output_dir)` в `src/services/xlsx_writer.py` с использованием выбранной библиотеки (`openpyxl` или `xlsxwriter`)
+- [ ] T021 [P] [US2] Реализовать класс `XLSXWriter` и метод `write_candles(records, output_dir)` в `src/services/xlsx_writer.py` с использованием выбранной библиотеки (`openpyxl` или `xlsxwriter`)
 - [ ] T022 [US2] Реализовать в `src/services/xlsx_writer.py` генерацию имени файла по шаблону `lqdt_tqtf_{period_start}_to_{period_end}_{report_date}_{HHMMSS}.xlsx` с использованием текущей даты/времени и параметров периода
 - [ ] T023 [US2] Реализовать в `src/services/xlsx_writer.py` запись данных в XLSX: одна строка на каждый день периода, колонки `Date, Open, High, Low, Close, Volume`, преобразование `None` в пустые ячейки
 - [ ] T024 [US2] Добавить в `src/services/xlsx_writer.py` обработку ошибок файловой системы (нет прав, диск заполнен и т.п.) с выбросом `IOError` и логированием
 - [ ] T025 [US2] Расширить существующий CLI в `src/cli/main.py`, добавив подкоманду `moex-lqdt` на основе контракта `specs/002-moscow-exchange-candles/contracts/cli-contract.md`
-- [ ] T026 [US2] Реализовать в подкоманде `moex-lqdt` последовательность: расчёт периода через `get_last_7_days()` из `src/utils/date_utils.py`, вызов `MoexClient.get_daily_candles(...)`, вызов `validate_candles(...)`, подготовка метаданных (`report_date, period_start, period_end, data_source, instrument, board`)
-- [ ] T027 [US2] Настроить в `src/cli/main.py` коды выхода и вывод сообщений об ошибках для подкоманды `moex-lqdt` (успех, ошибка API, таймаут/сеть, некорректные данные, ошибка ФС, ошибка валидации) в соответствии с контрактом CLI и требованиями FR‑007/SC‑004
+- [ ] T026 [US2] Реализовать в подкоманде `moex-lqdt` последовательность: расчёт периода через `get_last_7_days()` из `src/utils/date_utils.py`, вызов `MoexClient.get_daily_candles(...)`, вызов `validate_candles(...)`, подготовка значений для имени файла (`period_start, period_end, текущая дата и время`)
+- [ ] T027 [US2] Настроить в `src/cli/main.py` коды выхода и вывод сообщений об ошибках на русском языке для подкоманды `moex-lqdt` (успех, ошибка API, таймаут/сеть, некорректные данные, ошибка ФС, ошибка валидации) в соответствии с контрактом CLI и требованиями FR‑007/SC‑004
 
 **Checkpoint**: Пользовательские истории 1 И 2 реализованы и могут тестироваться независимо — есть полный путь от получения данных до сохранения XLSX‑файла
 
@@ -119,8 +119,9 @@
 - [ ] T032 [P] Синхронизировать содержимое `specs/002-moscow-exchange-candles/quickstart.md` и файлов в `specs/002-moscow-exchange-candles/contracts/` с фактическим поведением реализованного CLI и сервисов
 - [ ] T033 [P] Провести рефакторинг нового кода (`src/services/moex_client.py`, `src/services/xlsx_writer.py`, изменения в `src/cli/main.py`, `src/utils/validators.py`, `src/models/candles.py`) для соблюдения PEP 8 и единообразия со структурой фичи `001-cbr-exchange-rate`
 - [ ] T034 [P] Проверить, что все новые публичные функции и классы в `src/services/moex_client.py`, `src/services/xlsx_writer.py`, `src/cli/main.py`, `src/utils/validators.py`, `src/models/candles.py` имеют аннотации типов и при необходимости краткие комментарии для нетривиальной логики
-- [ ] T035 [P] Проверить, что все ошибки, связанные с API Мосбиржи, валидацией и записью XLSX, логируются и выводятся в stderr в соответствии с требованиями FR‑007/SC‑004 и контрактом CLI
+- [ ] T035 [P] Проверить, что все ошибки, связанные с API Мосбиржи, валидацией и записью XLSX, логируются и выводятся в stderr на русском языке в соответствии с требованиями FR‑007/SC‑004 и контрактом CLI
 - [ ] T036 [P] Запустить полный набор тестов `pytest` для всего проекта и убедиться, что новая функциональность удовлетворяет критериям успеха SC‑001–SC‑006 и не ломает существующие сценарии фичи `001-cbr-exchange-rate`
+- [ ] T037 [P] Добавить перф‑тест/бенчмарк сценария `moex-lqdt` в `tests/integration/test_end_to_end.py`, задокументировав окружение, типичные входные данные, методику измерения и критерий прохождения для SC‑001 (время выполнения ≤ 20 секунд при нормальных сетевых условиях)
 
 ---
 
@@ -225,7 +226,7 @@ Task: "Расширить CLI и реализовать подкоманду moe
 
 ## Task Summary
 
-**Всего задач**: 36
+**Всего задач**: 37
 
 **По фазам**:
 
@@ -234,14 +235,14 @@ Task: "Расширить CLI и реализовать подкоманду moe
 - Phase 3 (User Story 1): 8 задач (3 теста + 5 реализация)
 - Phase 4 (User Story 2): 10 задач (3 теста + 7 реализация)
 - Phase 5 (Integration): 3 задачи
-- Phase 6 (Polish): 6 задач
+- Phase 6 (Polish): 7 задач
 
 **По пользовательским историям**:
 
 - User Story 1 (P1): 8 задач
 - User Story 2 (P2): 10 задач
 
-**Параллельные возможности**: 23 задачи помечены [P] и могут выполняться параллельно при отсутствии конфликтов по файлам и зависимостям.
+**Параллельные возможности**: 24 задачи помечены [P] и могут выполняться параллельно при отсутствии конфликтов по файлам и зависимостям.
 
 **Рекомендуемый MVP‑объём**: Phases 1–3 (Setup + Foundational + User Story 1) = 17 задач
 
