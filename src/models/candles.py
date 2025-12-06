@@ -1,4 +1,4 @@
-"""Candle data model for MOEX LQDT/TQTF daily candles."""
+"""Модель данных свечи для LQDT/TQTF (Мосбиржа)."""
 
 from dataclasses import dataclass
 from datetime import date
@@ -8,17 +8,17 @@ from typing import Optional
 @dataclass
 class CandleRecord:
     """
-    Represents a single day's OHLCV candle for LQDT on board TQTF.
+    Представляет дневную свечу (OHLCV) для инструмента LQDT на доске TQTF.
 
-    Attributes:
-        date: Calendar date of the candle.
-        open: Opening price (None if no data).
-        high: Highest price (None if no data).
-        low: Lowest price (None if no data).
-        close: Closing price (None if no data).
-        volume: Trading volume (None if no data).
-        instrument: Instrument identifier, defaults to "LQDT".
-        board: Board identifier, defaults to "TQTF".
+    Атрибуты:
+        date: Дата свечи.
+        open: Цена открытия (None если данных нет).
+        high: Максимальная цена (None если данных нет).
+        low: Минимальная цена (None если данных нет).
+        close: Цена закрытия (None если данных нет).
+        volume: Объём торгов (None если данных нет).
+        instrument: Идентификатор инструмента, по умолчанию "LQDT".
+        board: Код доски, по умолчанию "TQTF".
     """
 
     date: date

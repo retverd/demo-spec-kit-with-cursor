@@ -1,4 +1,4 @@
-"""Date range calculation utilities for exchange rate extraction."""
+"""Утилиты расчёта диапазона дат для выгрузки курсов."""
 
 from datetime import date, timedelta
 from typing import List
@@ -6,18 +6,17 @@ from typing import List
 
 def get_last_7_days() -> List[date]:
     """
-    Calculate the last 7 calendar days: [today, today - 6] (inclusive, 7 days total).
-    
+    Рассчитать последние 7 календарных дней: [сегодня-6, …, сегодня] (включительно, всего 7 дат).
+
     Returns:
-        List of 7 date objects, starting from today - 6 days ago and ending with today.
-        Dates are in chronological order (oldest first).
-    
-    Example:
-        If today is 2025-12-02, returns:
+        Список из 7 объектов date, начиная с сегодня минус 6 дней и заканчивая сегодня.
+        Даты расположены в хронологическом порядке (от старшей к младшей).
+
+    Пример:
+        Если сегодня 2025-12-02, возвращается:
         [date(2025-11-26), date(2025-11-27), ..., date(2025-12-02)]
     """
     today = date.today()
-    # Calculate 7 days: [today, today - 6] (inclusive, 7 days total)
+    # Рассчитываем 7 дней: [сегодня-6, …, сегодня] включительно
     start_date = today - timedelta(days=6)
     return [start_date + timedelta(days=i) for i in range(7)]
-

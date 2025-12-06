@@ -1,4 +1,4 @@
-"""CBR API client for extracting exchange rate data."""
+"""Клиент API ЦБ РФ для извлечения курса валют."""
 
 import logging
 import sys
@@ -14,177 +14,187 @@ logger = logging.getLogger(__name__)
 
 
 class CBRClientError(Exception):
-    """Exception raised for CBR API client errors."""
+    """Исключение для ошибок клиента ЦБ РФ."""
+
     pass
 
 
 class CBRClient:
     """
-    Client for retrieving exchange rate data from Central Bank of Russia (ЦБ РФ) API.
-    
-    The client connects to the CBR XML_dynamic.asp API endpoint to retrieve
-    RUB/USD exchange rates for a specified date range.
+    Клиент для получения курса RUB/USD из API ЦБ РФ.
+
+    Подключается к эндпоинту XML_dynamic.asp и возвращает курс за указанный период.
     """
-    
+
     BASE_URL = "http://www.cbr.ru/scripts/XML_dynamic.asp"
     CURRENCY_CODE = "R01235"  # USD currency code
     TIMEOUT_SECONDS = 15  # Aligns with SC-002 (30-second total requirement)
-    
+
     def __init__(self):
-        """Initialize the CBR client."""
+        """Создать экземпляр клиента ЦБ РФ."""
         self.session = requests.Session()
-    
-    def get_exchange_rates(self, start_date: date, end_date: date) -> List[ExchangeRateRecord]:
+
+    def get_exchange_rates(
+        self, start_date: date, end_date: date
+    ) -> List[ExchangeRateRecord]:
         """
-        Retrieve RUB/USD exchange rates for the specified date range.
-        
+        Получить курсы RUB/USD за указанный период.
+
         Args:
-            start_date: Start date of the period (inclusive)
-            end_date: End date of the period (inclusive)
-        
+            start_date: Начало периода (включительно)
+            end_date: Конец периода (включительно)
+
         Returns:
-            List of ExchangeRateRecord objects, one for each day in the range.
-            Missing days (weekends/holidays) will have null exchange_rate_value.
-        
+            Список ExchangeRateRecord по одному на день. Пропуски (выходные/праздники)
+            будут иметь exchange_rate_value = None.
+
         Raises:
-            CBRClientError: If the API request fails, times out, or returns invalid data.
+            CBRClientError: при сетевых ошибках, ошибках HTTP или некорректных данных.
         """
         try:
-            # Construct URL with date range
+            # Собрать URL с параметрами дат
             url = self._build_url(start_date, end_date)
-            logger.info(f"Requesting exchange rates from CBR API: {start_date} to {end_date}")
-            
-            # Make request with timeout (aligns with SC-002: 30-second total requirement)
+            logger.info(
+                f"Requesting exchange rates from CBR API: {start_date} to {end_date}"
+            )
+
+            # Выполнить запрос с таймаутом (соответствует SC-002)
             response = self.session.get(url, timeout=self.TIMEOUT_SECONDS)
             response.raise_for_status()
-            
-            # Decode from windows-1251 encoding
+
+            # Декодировать ответ windows-1251
             try:
-                content = response.content.decode('windows-1251')
+                content = response.content.decode("windows-1251")
             except UnicodeDecodeError as e:
                 logger.error(f"Failed to decode response from windows-1251: {e}")
                 raise CBRClientError(
                     "Invalid response encoding from CBR API. Expected windows-1251."
                 ) from e
-            
-            # Parse XML and extract records
+
+            # Распарсить XML и извлечь записи
             records = self._parse_xml_response(content, start_date, end_date)
-            
-            logger.info(f"Successfully retrieved {len([r for r in records if r.exchange_rate_value is not None])} exchange rates")
+
+            logger.info(
+                f"Successfully retrieved {len([r for r in records if r.exchange_rate_value is not None])} exchange rates"
+            )
             return records
-            
+
         except requests.Timeout as e:
             error_msg = "Network timeout while connecting to CBR API. Please check your network connection."
             logger.error(error_msg)
             print(error_msg, file=sys.stderr)
             raise CBRClientError(error_msg) from e
-            
+
         except requests.ConnectionError as e:
-            error_msg = "Unable to connect to CBR API. Please check your network connection."
+            error_msg = (
+                "Unable to connect to CBR API. Please check your network connection."
+            )
             logger.error(error_msg)
             print(error_msg, file=sys.stderr)
             raise CBRClientError(error_msg) from e
-            
+
         except requests.HTTPError as e:
             error_msg = f"CBR API returned error: {e.response.status_code if hasattr(e, 'response') else 'Unknown'}"
             logger.error(error_msg)
             print(error_msg, file=sys.stderr)
             raise CBRClientError(error_msg) from e
-            
+
         except ET.ParseError as e:
             error_msg = "Invalid or malformed XML response from CBR API."
             logger.error(f"{error_msg}: {e}")
             print(error_msg, file=sys.stderr)
             raise CBRClientError(error_msg) from e
-            
+
         except (ValueError, KeyError, AttributeError) as e:
             error_msg = "Invalid or malformed data received from CBR API."
             logger.error(f"{error_msg}: {e}")
             print(error_msg, file=sys.stderr)
             raise CBRClientError(error_msg) from e
-    
+
     def _build_url(self, start_date: date, end_date: date) -> str:
         """
-        Build the CBR API URL with date range parameters.
-        
+        Собрать URL API ЦБ РФ с параметрами периода.
+
         Args:
-            start_date: Start date (DD/MM/YYYY format)
-            end_date: End date (DD/MM/YYYY format)
-        
+            start_date: Дата начала (формат DD/MM/YYYY)
+            end_date: Дата окончания (формат DD/MM/YYYY)
+
         Returns:
-            Complete API URL with query parameters
+            Полный URL с параметрами запроса.
         """
-        date_req1 = start_date.strftime('%d/%m/%Y')
-        date_req2 = end_date.strftime('%d/%m/%Y')
+        date_req1 = start_date.strftime("%d/%m/%Y")
+        date_req2 = end_date.strftime("%d/%m/%Y")
         return (
             f"{self.BASE_URL}"
             f"?date_req1={date_req1}"
             f"&date_req2={date_req2}"
             f"&VAL_NM_RQ={self.CURRENCY_CODE}"
         )
-    
+
     def _parse_xml_response(
         self, xml_content: str, start_date: date, end_date: date
     ) -> List[ExchangeRateRecord]:
         """
-        Parse XML response and create ExchangeRateRecord objects for all dates in range.
-        
-        Missing days (weekends/holidays) are filled with null exchange_rate_value.
-        
+        Распарсить XML и создать ExchangeRateRecord для всех дат периода.
+
+        Пропущенные дни (выходные/праздники) получают exchange_rate_value = None.
+
         Args:
-            xml_content: XML content as string (already decoded from windows-1251)
-            start_date: Start date of the period
-            end_date: End date of the period
-        
+            xml_content: Строка XML (уже декодирована из windows-1251)
+            start_date: Начало периода
+            end_date: Конец периода
+
         Returns:
-            List of ExchangeRateRecord objects, one for each day in the range
+            Список ExchangeRateRecord, по одному на день периода.
         """
-        # Parse XML
+        # Разбор XML
         root = ET.fromstring(xml_content)
-        
-        # Extract all records from API response
+
+        # Извлечь все записи из ответа
         api_records = {}
-        for record_elem in root.findall('Record'):
-            # Extract date (DD.MM.YYYY format)
-            date_str = record_elem.get('Date')
+        for record_elem in root.findall("Record"):
+            # Дата в формате DD.MM.YYYY
+            date_str = record_elem.get("Date")
             if not date_str:
                 continue
-            
-            # Parse date from DD.MM.YYYY to date object
+
+            # Преобразовать дату в объект date
             try:
-                day, month, year = date_str.split('.')
+                day, month, year = date_str.split(".")
                 record_date = date(int(year), int(month), int(day))
             except (ValueError, TypeError) as e:
-                logger.warning(f"Invalid date format in API response: {date_str}, skipping")
+                logger.warning(
+                    f"Invalid date format in API response: {date_str}, skipping"
+                )
                 continue
-            
-            # Extract exchange rate value
-            value_elem = record_elem.find('Value')
+
+            # Извлечь значение курса
+            value_elem = record_elem.find("Value")
             if value_elem is None or value_elem.text is None:
                 logger.warning(f"No Value element for date {record_date}, skipping")
                 continue
-            
-            # Convert comma to dot and parse as float
+
+            # Заменить запятую на точку и преобразовать в float
             try:
-                value_str = value_elem.text.replace(',', '.')
+                value_str = value_elem.text.replace(",", ".")
                 rate = float(value_str)
                 api_records[record_date] = rate
             except (ValueError, TypeError) as e:
-                logger.warning(f"Invalid rate value for date {record_date}: {value_elem.text}, skipping")
+                logger.warning(
+                    f"Invalid rate value for date {record_date}: {value_elem.text}, skipping"
+                )
                 continue
-        
-        # Create ExchangeRateRecord for all dates in range, filling missing days with null
+
+        # Сформировать записи на все даты периода, пропуски заполнить None
         result = []
         current_date = start_date
         while current_date <= end_date:
             rate = api_records.get(current_date)  # None if missing
-            result.append(ExchangeRateRecord(
-                date=current_date,
-                exchange_rate_value=rate,
-                currency_pair="RUB/USD"
-            ))
+            result.append(
+                ExchangeRateRecord(
+                    date=current_date, exchange_rate_value=rate, currency_pair="RUB/USD"
+                )
+            )
             current_date += timedelta(days=1)
-        
+
         return result
-
-

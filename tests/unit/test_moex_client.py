@@ -1,4 +1,4 @@
-"""Unit tests for MoexClient."""
+"""Юнит-тесты для MoexClient."""
 
 from datetime import date
 from unittest.mock import Mock, patch
@@ -12,7 +12,7 @@ from src.services.moex_client import MoexClient, MoexClientError
 
 @patch("src.services.moex_client.requests.Session")
 def test_success_get_daily_candles(mock_session_class):
-    """Ensure MoexClient maps API response and fills missing dates."""
+    """Проверяет маппинг ответа API и заполнение пропущенных дат."""
     payload = {
         "candles": {
             "columns": [
@@ -66,19 +66,19 @@ def test_success_get_daily_candles(mock_session_class):
     assert records[0].date == date(2025, 11, 28)
     assert isinstance(records[0], CandleRecord)
     assert records[0].open == 10.0
-    # Missing 2025-11-29 should be filled with None values
+    # Пропущенная дата 2025-11-29 должна быть заполнена значениями None
     assert records[1].date == date(2025, 11, 29)
     assert records[1].open is None
-    # Provided second record
+    # Предоставление второй записи
     assert records[2].date == date(2025, 11, 30)
     assert records[2].close == 12.0
-    # Ensure all days present through 2025-12-04
+    # Обеспечение наличия всех дат в периоде через 2025-12-04
     assert records[-1].date == date(2025, 12, 4)
 
 
 @patch("src.services.moex_client.requests.Session")
 def test_http_error_raises_moex_client_error(mock_session_class):
-    """HTTP 5xx should raise MoexClientError."""
+    """HTTP 5xx вызывает MoexClientError."""
     mock_response = Mock()
     http_error = requests.HTTPError("500")
     mock_response.raise_for_status.side_effect = http_error
@@ -93,7 +93,7 @@ def test_http_error_raises_moex_client_error(mock_session_class):
 
 @patch("src.services.moex_client.requests.Session")
 def test_timeout_raises_moex_client_error(mock_session_class):
-    """Network timeout should raise MoexClientError."""
+    """Таймаут сети вызывает MoexClientError."""
     mock_session = Mock()
     mock_session.get.side_effect = requests.Timeout("timeout")
     mock_session_class.return_value = mock_session

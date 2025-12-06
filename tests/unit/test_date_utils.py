@@ -1,27 +1,25 @@
-"""Unit tests for date_utils module."""
+"""Юнит-тесты модуля date_utils."""
 
 from datetime import date, timedelta
-
-import pytest
 
 from src.utils.date_utils import get_last_7_days
 
 
 def test_get_last_7_days_returns_seven_dates():
-    """Test that get_last_7_days returns exactly 7 dates."""
+    """Проверка того, что функция возвращает ровно 7 дат."""
     dates = get_last_7_days()
     assert len(dates) == 7
 
 
 def test_get_last_7_days_includes_today():
-    """Test that get_last_7_days includes today as the last date."""
+    """Проверка того, что последняя дата — сегодня."""
     dates = get_last_7_days()
     today = date.today()
     assert dates[-1] == today
 
 
 def test_get_last_7_days_starts_six_days_ago():
-    """Test that get_last_7_days starts from today - 6 days."""
+    """Проверка того, что первая дата — сегодня минус 6 дней."""
     dates = get_last_7_days()
     today = date.today()
     expected_start = today - timedelta(days=6)
@@ -29,23 +27,21 @@ def test_get_last_7_days_starts_six_days_ago():
 
 
 def test_get_last_7_days_sequential_dates():
-    """Test that get_last_7_days returns sequential calendar days."""
+    """Проверка того, что даты идут последовательно по дням."""
     dates = get_last_7_days()
     for i in range(len(dates) - 1):
         assert dates[i + 1] - dates[i] == timedelta(days=1)
 
 
 def test_get_last_7_days_covers_seven_day_period():
-    """Test that get_last_7_days covers exactly 7 days: [today, today - 6]."""
+    """Проверка того, что функция покрывает диапазон из 7 дней: [сегодня-6, сегодня]."""
     dates = get_last_7_days()
     today = date.today()
     start_date = today - timedelta(days=6)
-    
-    # Check first and last dates
+
+    # Проверяем первую и последнюю даты
     assert dates[0] == start_date
     assert dates[-1] == today
-    
-    # Check span is 6 days (7 days total inclusive)
+
+    # Проверка того, что разница между первой и последней датой равна 6 дням (7 дней включительно)
     assert (dates[-1] - dates[0]).days == 6
-
-

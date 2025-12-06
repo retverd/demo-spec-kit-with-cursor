@@ -1,4 +1,4 @@
-"""Data validation functions for exchange rate records."""
+"""Функции валидации данных курсов и свечей."""
 
 from datetime import date, timedelta
 from math import isnan
@@ -10,28 +10,28 @@ from src.models.exchange_rate import ExchangeRateRecord
 
 def validate_date(date_value: date, period_start: date, period_end: date) -> bool:
     """
-    Validate that a date is within the specified period.
+    Проверить, что дата входит в заданный период.
 
     Args:
-        date_value: The date to validate
-        period_start: Start date of the valid period (inclusive)
-        period_end: End date of the valid period (inclusive)
+        date_value: Дата для проверки
+        period_start: Начало периода (включительно)
+        period_end: Конец периода (включительно)
 
     Returns:
-        True if date is within the period, False otherwise
+        True если дата входит в период, иначе False
     """
     return period_start <= date_value <= period_end
 
 
 def validate_rate(rate: Optional[float]) -> bool:
     """
-    Validate that an exchange rate value is valid.
+    Проверить корректность значения курса.
 
     Args:
-        rate: The exchange rate value (can be None for missing data)
+        rate: Значение курса (может быть None для пропущенных данных)
 
     Returns:
-        True if rate is None (missing data) or a positive number, False otherwise
+        True для None (отсутствие данных) или положительного числа, иначе False
     """
     if rate is None:
         return True  # Missing data is valid
@@ -49,57 +49,57 @@ def validate_records(
     records: List[ExchangeRateRecord], period_start: date, period_end: date
 ) -> tuple[bool, Optional[str]]:
     """
-    Validate a list of exchange rate records.
+    Проверить список записей курса.
 
-    Performs the following validations:
-    1. Must have exactly 7 records (one per day in the 7-day period)
-    2. All dates must be valid and within the period
-    3. All dates must be unique (no duplicates)
-    4. Non-null rates must be positive numbers
-    5. All dates in the period must be present
+    Валидируется:
+    1. Ровно 7 записей (по дню в семидневном периоде).
+    2. Все даты должны быть корректными и находиться внутри периода.
+    3. Дубликаты дат не допускаются.
+    4. Ненулевые значения курса должны быть положительными.
+    5. Все даты периода должны присутствовать в списке записей.
 
     Args:
-        records: List of ExchangeRateRecord objects to validate
-        period_start: Start date of the expected period
-        period_end: End date of the expected period
+        records: Список объектов класса ExchangeRateRecord для валидации.
+        period_start: Начало периода.
+        period_end: Конец периода.
 
     Returns:
-        Tuple of (is_valid, error_message). If is_valid is True, error_message is None.
+        (is_valid, error_message). При успехе error_message = None.
     """
-    # Check completeness: must have exactly 7 records
+    # Проверка на полноту: ровно 7 записей
     if len(records) != 7:
         return False, f"Expected 7 records, got {len(records)}"
 
-    # Check all dates are present and unique
+    # Проверка наличия всех дат периода и их уникальности
     dates_seen = set()
     for record in records:
-        # Validate date is within period
+        # Дата должна быть в периоде
         if not validate_date(record.date, period_start, period_end):
             return (
                 False,
                 f"Date {record.date} is outside the expected period [{period_start}, {period_end}]",
             )
 
-        # Check for duplicates
+        # Проверка на дубликаты
         if record.date in dates_seen:
             return False, f"Duplicate date found: {record.date}"
         dates_seen.add(record.date)
 
-        # Validate rate
+        # Проверка значения курса
         if not validate_rate(record.exchange_rate_value):
             return (
                 False,
                 f"Invalid exchange rate value for date {record.date}: {record.exchange_rate_value}",
             )
 
-        # Validate currency pair
+        # Проверка валютной пары
         if record.currency_pair != "RUB/USD":
             return (
                 False,
                 f"Invalid currency pair: {record.currency_pair}, expected RUB/USD",
             )
 
-    # Check all dates in period are present
+    # Проверка наличия всех дат периода
     expected_dates = {period_start + timedelta(days=i) for i in range(7)}
     if dates_seen != expected_dates:
         missing = expected_dates - dates_seen
@@ -109,7 +109,7 @@ def validate_records(
 
 
 def _is_non_negative_number(value: Union[int, float]) -> bool:
-    """Check that value is a number >= 0 and not NaN."""
+    """Проверить, что число неотрицательно и не NaN."""
     try:
         numeric = float(value)
     except (TypeError, ValueError):
@@ -123,14 +123,14 @@ def validate_candles(
     records: List[CandleRecord], start_date: date, end_date: date
 ) -> tuple[bool, Optional[str]]:
     """
-    Validate OHLCV candle records for the LQDT/TQTF 7-day period.
+    Проверить записи OHLCV для периода 7 дней LQDT/TQTF.
 
-    Checks:
-    1. Count matches the expected day span.
-    2. Dates are unique and within [start_date, end_date].
-    3. Prices/volume are non-negative numbers when present.
-    4. Instrument and board match expected values.
-    5. All dates in the period are present.
+    Проверяется:
+    1. Количество записей соответствует длине периода.
+    2. Даты уникальны и внутри [start_date, end_date].
+    3. Цены/объём неотрицательны, если присутствуют.
+    4. Instrument и board соответствуют ожидаемым.
+    5. Присутствуют все даты периода.
 
     Returns:
         (is_valid, error_message)

@@ -1,4 +1,4 @@
-"""MOEX ISS API client for LQDT/TQTF daily candles."""
+"""Клиент ISS‑API Мосбиржи для дневных свечей LQDT/TQTF."""
 
 import logging
 import sys
@@ -19,9 +19,7 @@ class MoexClientError(Exception):
 
 
 class MoexClient:
-    """
-    Client for retrieving daily OHLCV candles for LQDT/TQTF from MOEX ISS API.
-    """
+    """Клиент для получения дневных свечей LQDT/TQTF через ISS‑API Мосбиржи."""
 
     BASE_URL = "https://iss.moex.com/iss/engines/stock/markets/shares/boards/TQTF/securities/LQDT/candles.json"
     TIMEOUT_SECONDS = 15
@@ -99,7 +97,15 @@ class MoexClient:
 
         columns = candles["columns"]
         data_rows = candles["data"]
-        required_columns = ["open", "high", "low", "close", "volume", "begin"]
+        required_columns = [
+            "open",
+            "high",
+            "low",
+            "close",
+            "volume",
+            "begin",
+            "boardid",
+        ]
         for col in required_columns:
             if col not in columns:
                 raise MoexClientError(
@@ -135,11 +141,7 @@ class MoexClient:
                 # Игнорируем записи вне запрошенного периода
                 continue
 
-            board = (
-                row[col_index["boardid"]]
-                if "boardid" in col_index
-                else self.EXPECTED_BOARD
-            )
+            board = row[col_index["boardid"]]
             if board != self.EXPECTED_BOARD:
                 raise MoexClientError(
                     f"Получена доска {board}, ожидалась {self.EXPECTED_BOARD}"
@@ -157,7 +159,7 @@ class MoexClient:
             )
             records_by_date[day] = record
 
-        # Ensure all dates are present, fill missing with None values
+        # Обеспечение наличия всех дат и заполнение пропущенных значений None
         records: List[CandleRecord] = []
         current_date = start_date
         while current_date <= end_date:

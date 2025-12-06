@@ -1,4 +1,4 @@
-"""XLSX writer for LQDT/TQTF candles."""
+"""Запись свечей LQDT/TQTF в XLSX."""
 
 import os
 from datetime import date, datetime
@@ -10,7 +10,7 @@ from src.models.candles import CandleRecord
 
 
 class XLSXWriter:
-    """Writes candle data to XLSX with required naming pattern and headers."""
+    """Сохраняет свечи в XLSX с нужным именованием и заголовками."""
 
     HEADERS = ["Date", "Open", "High", "Low", "Close", "Volume"]
 
@@ -23,21 +23,21 @@ class XLSXWriter:
         report_date: Optional[date] = None,
     ) -> str:
         """
-        Write candles to XLSX.
+        Записать свечи в XLSX.
 
         Args:
-            records: List of CandleRecord for the period (expected 7 days).
-            output_dir: Directory to save the file.
-            period_start: Period start date; if None, derived from records.
-            period_end: Period end date; if None, derived from records.
-            report_date: Date of extraction; if None, uses today.
+            records: Список свечей за период (ожидается 7 дней).
+            output_dir: Каталог для сохранения файла.
+            period_start: Начало периода; если None, берётся из записей.
+            period_end: Конец периода; если None, берётся из записей.
+            report_date: Дата выгрузки; если None, используется сегодня.
 
         Returns:
-            Full path to created XLSX file.
+            Полный путь к созданному файлу.
 
         Raises:
-            ValueError: When records are empty.
-            IOError: When file cannot be written.
+            ValueError: Если список записей пуст.
+            IOError: При ошибке записи файла.
         """
         if not records:
             raise ValueError("Нет данных свечей для записи")

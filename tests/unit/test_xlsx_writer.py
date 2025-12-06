@@ -1,4 +1,4 @@
-"""Unit tests for XLSXWriter."""
+"""Юнит-тесты XLSXWriter."""
 
 import os
 from datetime import date, timedelta
@@ -14,7 +14,7 @@ def _seven_day_records():
     records = []
     for i in range(7):
         day = start + timedelta(days=i)
-        # Make second day empty to test None handling
+        # Делаем второй день пустым для проверки обработки None
         if i == 1:
             records.append(
                 CandleRecord(
@@ -57,7 +57,7 @@ def test_write_creates_xlsx_with_headers_and_rows(tmp_path):
 
     headers = [cell.value for cell in sheet[1]]
     assert headers == ["Date", "Open", "High", "Low", "Close", "Volume"]
-    # 1 header row + 7 data rows
+    # 1 строка заголовков + 7 строк данных
     assert sheet.max_row == 8
 
     first_data_row = [cell.value for cell in sheet[2]]
@@ -79,7 +79,7 @@ def test_write_handles_none_values_as_empty_cells(tmp_path):
     wb = openpyxl.load_workbook(filename)
     sheet = wb.active
     second_data_row = [cell.value for cell in sheet[3]]  # 3rd row: second record
-    # Open/High/Low/Close/Volume should be None -> empty cells
+    # Поля Open/High/Low/Close/Volume должны быть None → пустые ячейки
     assert second_data_row[0] == records[1].date.isoformat()
     assert all(value is None for value in second_data_row[1:])
 

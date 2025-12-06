@@ -1,4 +1,4 @@
-"""Unit tests for validators module."""
+"""Юнит-тесты модуля validators."""
 
 from datetime import date, timedelta
 
@@ -13,10 +13,10 @@ from src.utils.validators import (
 
 
 class TestValidateDate:
-    """Tests for validate_date function."""
+    """Проверка validate_date."""
 
     def test_valid_date_within_period(self):
-        """Test that a date within the period is valid."""
+        """Дата внутри периода считается валидной."""
         period_start = date(2025, 11, 25)
         period_end = date(2025, 12, 1)
         test_date = date(2025, 11, 28)
@@ -24,21 +24,21 @@ class TestValidateDate:
         assert validate_date(test_date, period_start, period_end) is True
 
     def test_valid_date_at_period_start(self):
-        """Test that a date at period start is valid."""
+        """Дата на границе начала валидна."""
         period_start = date(2025, 11, 25)
         period_end = date(2025, 12, 1)
 
         assert validate_date(period_start, period_start, period_end) is True
 
     def test_valid_date_at_period_end(self):
-        """Test that a date at period end is valid."""
+        """Дата на границе конца валидна."""
         period_start = date(2025, 11, 25)
         period_end = date(2025, 12, 1)
 
         assert validate_date(period_end, period_start, period_end) is True
 
     def test_invalid_date_before_period(self):
-        """Test that a date before the period is invalid."""
+        """Дата до периода невалидна."""
         period_start = date(2025, 11, 25)
         period_end = date(2025, 12, 1)
         test_date = date(2025, 11, 24)
@@ -46,7 +46,7 @@ class TestValidateDate:
         assert validate_date(test_date, period_start, period_end) is False
 
     def test_invalid_date_after_period(self):
-        """Test that a date after the period is invalid."""
+        """Дата после периода невалидна."""
         period_start = date(2025, 11, 25)
         period_end = date(2025, 12, 1)
         test_date = date(2025, 12, 2)
@@ -55,37 +55,37 @@ class TestValidateDate:
 
 
 class TestValidateRate:
-    """Tests for validate_rate function."""
+    """Проверка validate_rate."""
 
     def test_valid_positive_rate(self):
-        """Test that a positive rate is valid."""
+        """Положительное значение валидно."""
         assert validate_rate(78.50) is True
         assert validate_rate(100.0) is True
         assert validate_rate(0.01) is True
 
     def test_valid_null_rate(self):
-        """Test that None (missing data) is valid."""
+        """None (отсутствие данных) валиден."""
         assert validate_rate(None) is True
 
     def test_invalid_zero_rate(self):
-        """Test that zero rate is invalid."""
+        """Нулевое значение невалидно."""
         assert validate_rate(0.0) is False
 
     def test_invalid_negative_rate(self):
-        """Test that negative rate is invalid."""
+        """Отрицательное значение невалидно."""
         assert validate_rate(-10.0) is False
 
     def test_invalid_string_rate(self):
-        """Test that non-numeric rate is invalid."""
+        """Строковые/нечисловые значения невалидны."""
         assert validate_rate("78.50") is False
         assert validate_rate("invalid") is False
 
 
 class TestValidateRecords:
-    """Tests for validate_records function."""
+    """Проверка validate_records."""
 
     def test_valid_complete_records(self):
-        """Test that 7 valid records for the period pass validation."""
+        """7 корректных записей проходят валидацию."""
         period_start = date(2025, 11, 25)
         period_end = date(2025, 12, 1)
 
@@ -103,7 +103,7 @@ class TestValidateRecords:
         assert error is None
 
     def test_invalid_too_few_records(self):
-        """Test that fewer than 7 records fails validation."""
+        """Меньше 7 записей — ошибка."""
         period_start = date(2025, 11, 25)
         period_end = date(2025, 12, 1)
 
@@ -122,10 +122,10 @@ class TestValidateRecords:
 
 
 class TestValidateCandles:
-    """Tests for validate_candles function."""
+    """Проверка validate_candles."""
 
     def test_valid_candles(self):
-        """Valid 7-day candle set passes validation."""
+        """Корректный набор на 7 дней проходит валидацию."""
         start_date = date(2025, 11, 25)
         end_date = date(2025, 12, 1)
         records = [
@@ -145,7 +145,7 @@ class TestValidateCandles:
         assert error is None
 
     def test_missing_date(self):
-        """Fail when a date from the period is missing."""
+        """Отсутствие даты периода даёт ошибку."""
         start_date = date(2025, 11, 25)
         end_date = date(2025, 12, 1)
         records = [
@@ -165,7 +165,7 @@ class TestValidateCandles:
         assert "Expected 7 records" in error
 
     def test_negative_value(self):
-        """Negative prices or volume should fail validation."""
+        """Отрицательные цены/объём — ошибка."""
         start_date = date(2025, 11, 25)
         end_date = date(2025, 12, 1)
         records = [
@@ -185,7 +185,7 @@ class TestValidateCandles:
         assert "Invalid open value" in error
 
     def test_wrong_board_or_instrument(self):
-        """Unexpected instrument/board should fail."""
+        """Неверный instrument/board приводит к ошибке."""
         start_date = date(2025, 11, 25)
         end_date = date(2025, 12, 1)
         records = [
@@ -207,7 +207,7 @@ class TestValidateCandles:
         assert "Invalid instrument" in error or "Invalid board" in error
 
     def test_duplicate_date(self):
-        """Duplicate date should be rejected."""
+        """Дубли даты отклоняются."""
         start_date = date(2025, 11, 25)
         end_date = date(2025, 12, 1)
         records = [
@@ -245,7 +245,7 @@ class TestValidateCandles:
         assert "Duplicate date" in error
 
     def test_invalid_too_many_records(self):
-        """Test that more than 7 records fails validation."""
+        """Более 7 записей — ошибка."""
         period_start = date(2025, 11, 25)
         period_end = date(2025, 12, 1)
 
@@ -263,7 +263,7 @@ class TestValidateCandles:
         assert "Expected 7 records" in error
 
     def test_invalid_duplicate_dates(self):
-        """Test that duplicate dates fail validation."""
+        """Дубликаты дат не проходят валидацию."""
         period_start = date(2025, 11, 25)
         period_end = date(2025, 12, 1)
 
@@ -278,7 +278,7 @@ class TestValidateCandles:
         assert "Duplicate date" in error
 
     def test_invalid_date_outside_period(self):
-        """Test that dates outside period fail validation."""
+        """Дата вне периода — ошибка."""
         period_start = date(2025, 11, 25)
         period_end = date(2025, 12, 1)
 
@@ -296,7 +296,7 @@ class TestValidateCandles:
         assert "outside the expected period" in error
 
     def test_invalid_negative_rate(self):
-        """Test that negative rates fail validation."""
+        """Отрицательный курс — ошибка."""
         period_start = date(2025, 11, 25)
         period_end = date(2025, 12, 1)
 
@@ -314,7 +314,7 @@ class TestValidateCandles:
         assert "Invalid exchange rate value" in error
 
     def test_invalid_currency_pair(self):
-        """Test that wrong currency pair fails validation."""
+        """Неверная валютная пара — ошибка."""
         period_start = date(2025, 11, 25)
         period_end = date(2025, 12, 1)
 
@@ -332,12 +332,11 @@ class TestValidateCandles:
         assert "Invalid currency pair" in error
 
     def test_invalid_missing_dates(self):
-        """Test that missing dates in period fail validation."""
+        """Пропущенные даты периода дают ошибку."""
         period_start = date(2025, 11, 25)
         period_end = date(2025, 12, 1)
 
-        # Create 6 records (missing one date) - this will fail the count check first
-        # which is the correct behavior: fewer records means missing dates
+        # Создаём 6 записей (одна дата пропущена) — сработает проверка количества
         records = [
             ExchangeRateRecord(
                 date=period_start + timedelta(days=i),

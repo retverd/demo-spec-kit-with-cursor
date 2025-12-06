@@ -1,4 +1,4 @@
-"""Integration tests for end-to-end exchange rate extraction flow."""
+"""Интеграционные тесты end-to-end для выгрузки курсов и свечей."""
 
 import os
 import tempfile
@@ -18,12 +18,12 @@ from src.utils.date_utils import get_last_7_days
 
 
 class TestEndToEndFlow:
-    """Tests for complete end-to-end extraction and save flow."""
+    """Полный E2E-поток выгрузки и сохранения Parquet."""
 
     @patch("src.services.cbr_client.requests.Session")
     def test_end_to_end_with_mocked_api(self, mock_session_class):
-        """Test complete flow from CLI to file creation with mocked CBR API."""
-        # Mock XML response
+        """Полный поток от CLI до файла с моканным API ЦБ."""
+        # Мокаем XML-ответ
         xml_content = """<?xml version="1.0" encoding="windows-1251"?>
 <ValCurs ID="R01235" DateRange1="25.11.2025" DateRange2="01.12.2025" name="Foreign Currency Market Dynamic">
     <Record Date="25.11.2025" Id="R01235">
@@ -72,32 +72,32 @@ class TestEndToEndFlow:
         mock_session_class.return_value = mock_session
 
         with tempfile.TemporaryDirectory() as tmpdir:
-            # Change to temp directory
+        # Переходим во временный каталог
             original_cwd = os.getcwd()
             try:
                 os.chdir(tmpdir)
 
-                # Run CLI (mocked)
+                # Запуск CLI (мок)
                 with patch(
                     "src.cli.main.ParquetWriter.write_exchange_rates"
                 ) as mock_write:
                     mock_write.return_value = os.path.join(tmpdir, "test.parquet")
                     exit_code = main()
 
-                # Verify exit code
+                # Код возврата
                 assert exit_code == 0
 
-                # Verify Parquet writer was called
+                # Parquet writer вызван
                 assert mock_write.called
                 call_args = mock_write.call_args
                 records = call_args[0][0]
                 metadata = call_args[0][1]
 
-                # Verify records
+                # Проверяем записи
                 assert len(records) == 7
                 assert all(isinstance(r, ExchangeRateRecord) for r in records)
 
-                # Verify metadata
+                # Проверяем метаданные
                 assert "report_date" in metadata
                 assert "period_start" in metadata
                 assert "period_end" in metadata
@@ -107,9 +107,9 @@ class TestEndToEndFlow:
 
     @patch("src.services.cbr_client.requests.Session")
     def test_cbr_client_and_parquet_writer_integration(self, mock_session_class):
-        """Test integration between CBR client and Parquet writer."""
+        """Интеграция клиента ЦБ и ParquetWriter."""
         with tempfile.TemporaryDirectory() as tmpdir:
-            # Mock CBR client response
+            # Мокаем ответ ЦБ
             xml_content = """<?xml version="1.0" encoding="windows-1251"?>
 <ValCurs ID="R01235" DateRange1="25.11.2025" DateRange2="01.12.2025" name="Foreign Currency Market Dynamic">
     <Record Date="25.11.2025" Id="R01235">
@@ -131,13 +131,13 @@ class TestEndToEndFlow:
             mock_session.get.return_value = mock_response
             mock_session_class.return_value = mock_session
 
-            # Extract data
+            # Получаем данные
             client = CBRClient()
             start_date = date(2025, 11, 25)
             end_date = date(2025, 12, 1)
             records = client.get_exchange_rates(start_date, end_date)
 
-            # Write to Parquet
+            # Пишем в Parquet
             writer = ParquetWriter()
             metadata = {
                 "report_date": "2025-12-02",
@@ -147,15 +147,15 @@ class TestEndToEndFlow:
             }
             filename = writer.write_exchange_rates(records, metadata, tmpdir)
 
-            # Verify file exists and can be read
+            # Файл существует и читается
             assert os.path.exists(filename)
 
-            # Read and verify data
+            # Читаем и проверяем данные
             table = pq.read_table(filename)
             df = table.to_pandas()
             assert len(df) == 7
 
-            # Verify metadata (use context manager to ensure proper cleanup)
+            # Проверяем метаданные (контекст для закрытия)
             with pq.ParquetFile(filename) as parquet_file:
                 file_metadata = parquet_file.metadata.metadata
                 decoded_metadata = {
@@ -166,11 +166,11 @@ class TestEndToEndFlow:
 
 
 class TestCLICommandExecution:
-    """Tests for CLI command execution scenarios."""
+    """Сценарии выполнения CLI."""
 
     @patch("src.services.cbr_client.requests.Session")
     def test_cli_success_scenario(self, mock_session_class):
-        """Test successful CLI execution."""
+        """Успешное выполнение CLI."""
         xml_content = """<?xml version="1.0" encoding="windows-1251"?>
 <ValCurs ID="R01235" DateRange1="25.11.2025" DateRange2="01.12.2025" name="Foreign Currency Market Dynamic">
     <Record Date="25.11.2025" Id="R01235">
@@ -198,7 +198,7 @@ class TestCLICommandExecution:
 
     @patch("src.services.cbr_client.requests.Session")
     def test_cli_api_error_scenario(self, mock_session_class):
-        """Test CLI error handling for API errors."""
+        """Обработка CLI ошибок API."""
         import requests
 
         mock_response = Mock()
@@ -215,7 +215,7 @@ class TestCLICommandExecution:
 
     @patch("src.services.cbr_client.requests.Session")
     def test_cli_network_error_scenario(self, mock_session_class):
-        """Test CLI error handling for network errors."""
+        """Обработка CLI сетевых ошибок."""
         import requests
 
         mock_session = Mock()
@@ -227,7 +227,7 @@ class TestCLICommandExecution:
 
 
 class TestMoexEndToEnd:
-    """Integration tests for moex-lqdt CLI flow."""
+    """Интеграционные тесты потока moex-lqdt."""
 
     @patch("src.services.moex_client.requests.Session")
     def test_moex_cli_success_creates_xlsx(self, mock_session_class, tmp_path):
@@ -354,9 +354,9 @@ class TestMoexEndToEnd:
             assert len(files) == 1
             wb = openpyxl.load_workbook(files[0])
             sheet = wb.active
-            # rows for full period even with missing days
+            # Строки на весь период даже при пропусках
             assert sheet.max_row == 8
-            # second row corresponds to missing day should be empty
+            # Вторая дата (пропуск) должна иметь пустые значения
             second_row = [cell.value for cell in sheet[3]]
             assert all(value is None for value in second_row[1:])
         finally:

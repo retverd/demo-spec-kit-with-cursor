@@ -1,4 +1,4 @@
-"""CLI entry point for exchange rate extraction."""
+"""CLI-точка входа для извлечения данных (CBR, MOEX)."""
 
 import argparse
 import logging
@@ -13,13 +13,13 @@ from src.services.xlsx_writer import XLSXWriter
 from src.utils.date_utils import get_last_7_days
 from src.utils.validators import validate_candles, validate_records
 
-# Configure logging
+# Настройка логирования
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
 
-# Exit codes per CLI contracts
+# Коды выхода (контракты CLI)
 EXIT_SUCCESS = 0
 EXIT_API_ERROR = 1
 EXIT_NETWORK_ERROR = 2
@@ -27,7 +27,7 @@ EXIT_INVALID_DATA = 3
 EXIT_FILE_SYSTEM_ERROR = 4
 EXIT_VALIDATION_ERROR = 5
 
-# Backwards compatibility aliases (existing tests)
+# Алиасы для обратной совместимости с существующими тестами
 EXIT_CBR_API_ERROR = EXIT_API_ERROR
 
 
@@ -53,12 +53,12 @@ def _build_parser() -> argparse.ArgumentParser:
 
 
 def _run_cbr() -> int:
-    """Existing CBR flow (unchanged behaviour)."""
+    """Текущий сценарий CBR (без изменений)."""
     dates = get_last_7_days()
     start_date = dates[0]
     end_date = dates[-1]
 
-    logger.info(f"Extracting exchange rates for period: {start_date} to {end_date}")
+    logger.info(f"Извлечение курса за период: {start_date} to {end_date}")
 
     try:
         cbr_client = CBRClient()
@@ -76,10 +76,10 @@ def _run_cbr() -> int:
         else:
             return EXIT_API_ERROR
 
-    logger.info("Validating extracted data")
+    logger.info("Валидация полученных данных")
     is_valid, error_msg = validate_records(records, start_date, end_date)
     if not is_valid:
-        error_message = f"Data validation failed: {error_msg}"
+        error_message = f"Валидация данных не пройдена: {error_msg}"
         logger.error(error_message)
         print(f"Error: {error_message}", file=sys.stderr)
         return EXIT_VALIDATION_ERROR
@@ -95,21 +95,21 @@ def _run_cbr() -> int:
     try:
         writer = ParquetWriter()
         filename = writer.write_exchange_rates(records, metadata, output_dir=".")
-        logger.info(f"Successfully created Parquet file: {filename}")
-        print(f"Successfully created {filename}")
+        logger.info(f"Успешно создан Parquet файл: {filename}")
+        print(f"Успешно создан {filename}")
         return EXIT_SUCCESS
     except IOError as e:
-        error_message = f"File system error: {e}"
+        error_message = f"Ошибка файловой системы: {e}"
         logger.error(error_message)
         print(f"Error: {error_message}", file=sys.stderr)
         return EXIT_FILE_SYSTEM_ERROR
     except ValueError as e:
-        error_message = f"Invalid metadata: {e}"
+        error_message = f"Некорректные метаданные: {e}"
         logger.error(error_message)
         print(f"Error: {error_message}", file=sys.stderr)
         return EXIT_INVALID_DATA
     except Exception as e:
-        error_message = f"Unexpected error: {e}"
+        error_message = f"Неожиданная ошибка: {e}"
         logger.error(error_message, exc_info=True)
         print(f"Error: {error_message}", file=sys.stderr)
         return EXIT_FILE_SYSTEM_ERROR
@@ -178,10 +178,10 @@ def _run_moex_lqdt() -> int:
 
 def main() -> int:
     """
-    Main CLI entry point.
+    Главная точка входа CLI.
 
-    Supports:
-    - cbr (default): RUB/USD за 7 дней → Parquet
+    Поддерживает:
+    - cbr (по умолчанию): RUB/USD за 7 дней → Parquet
     - moex-lqdt: свечи LQDT/TQTF за 7 дней → XLSX
     """
     parser = _build_parser()
@@ -197,11 +197,11 @@ def main() -> int:
         parser.print_help()
         return EXIT_INVALID_DATA
     except KeyboardInterrupt:
-        logger.info("Interrupted by user")
-        print("\nInterrupted by user", file=sys.stderr)
+        logger.info("Прервано пользователем")
+        print("\nПрервано пользователем", file=sys.stderr)
         return EXIT_API_ERROR
     except Exception as e:
-        error_message = f"Unexpected error: {e}"
+        error_message = f"Неожиданная ошибка: {e}"
         logger.error(error_message, exc_info=True)
         print(f"Error: {error_message}", file=sys.stderr)
         return EXIT_API_ERROR
