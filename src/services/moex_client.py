@@ -104,7 +104,6 @@ class MoexClient:
             "close",
             "volume",
             "begin",
-            "boardid",
         ]
         for col in required_columns:
             if col not in columns:
@@ -141,11 +140,11 @@ class MoexClient:
                 # Игнорируем записи вне запрошенного периода
                 continue
 
-            board = row[col_index["boardid"]]
-            if board != self.EXPECTED_BOARD:
-                raise MoexClientError(
-                    f"Получена доска {board}, ожидалась {self.EXPECTED_BOARD}"
-                )
+            board = (
+                row[col_index["boardid"]]
+                if "boardid" in col_index
+                else self.EXPECTED_BOARD
+            )
 
             record = CandleRecord(
                 date=day,

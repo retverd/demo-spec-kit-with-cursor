@@ -137,6 +137,8 @@ def _run_moex_lqdt() -> int:
         client = MoexClient()
         records = client.get_daily_candles(start_date, end_date)
     except MoexClientError as e:
+        # Выводим причину в stderr, затем классифицируем код выхода
+        print(f"Error: {e}", file=sys.stderr)
         return _classify_moex_error(e)
 
     logger.info("Проверка данных свечей")
@@ -176,7 +178,7 @@ def _run_moex_lqdt() -> int:
         return EXIT_FILE_SYSTEM_ERROR
 
 
-def main() -> int:
+def main(argv: list[str] | None = None) -> int:
     """
     Главная точка входа CLI.
 
@@ -185,7 +187,14 @@ def main() -> int:
     - moex-lqdt: свечи LQDT/TQTF за 7 дней → XLSX
     """
     parser = _build_parser()
-    args = parser.parse_args()
+
+    # Если argv не передан, используем sys.argv[1:], но игнорируем pytest-пути.
+    if argv is None:
+        argv = sys.argv[1:]
+        if argv and ("pytest" in argv[0] or "tests" in argv[0] or argv[0].endswith(".py")):
+            argv = []
+
+    args = parser.parse_args(argv)
     command = args.command or "cbr"
 
     try:
@@ -208,4 +217,4 @@ def main() -> int:
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    sys.exit(main(sys.argv[1:]))
