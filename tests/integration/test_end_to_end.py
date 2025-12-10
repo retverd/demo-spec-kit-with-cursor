@@ -2,6 +2,7 @@
 
 import os
 import tempfile
+import time
 from datetime import date
 from unittest.mock import Mock, patch
 
@@ -361,3 +362,58 @@ class TestMoexEndToEnd:
             assert all(value is None for value in second_row[1:])
         finally:
             os.chdir(original_cwd)
+
+    @patch("src.services.moex_client.requests.Session")
+    def test_moex_cli_performance_under_20_seconds(
+        self, mock_session_class, tmp_path
+    ):
+        """SC-001: выполнение сценария moex-lqdt занимает <20 секунд при моках."""
+        payload = {
+            "candles": {
+                "columns": [
+                    "open",
+                    "close",
+                    "high",
+                    "low",
+                    "value",
+                    "volume",
+                    "begin",
+                    "end",
+                    "boardid",
+                ],
+                "data": [
+                    [
+                        10.0,
+                        11.0,
+                        12.0,
+                        9.5,
+                        0.0,
+                        100.0,
+                        "2025-11-28 10:00:00",
+                        "2025-11-28 18:45:00",
+                        "TQTF",
+                    ],
+                ],
+            }
+        }
+
+        mock_response = Mock()
+        mock_response.raise_for_status.return_value = None
+        mock_response.json.return_value = payload
+        mock_session = Mock()
+        mock_session.get.return_value = mock_response
+        mock_session_class.return_value = mock_session
+
+        original_cwd = os.getcwd()
+        start = time.perf_counter()
+        try:
+            os.chdir(tmp_path)
+            with patch("sys.argv", ["python", "moex-lqdt"]):
+                exit_code = main()
+        finally:
+            os.chdir(original_cwd)
+
+        duration = time.perf_counter() - start
+        assert exit_code == 0
+        assert duration < 20
+        assert list(tmp_path.glob("lqdt_tqtf_*.xlsx"))

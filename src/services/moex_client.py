@@ -91,9 +91,9 @@ class MoexClient:
     ) -> List[CandleRecord]:
         candles = payload.get("candles")
         if not candles or "columns" not in candles or "data" not in candles:
-            raise MoexClientError(
-                "Некорректные данные от API Мосбиржи: отсутствует секция candles"
-            )
+            msg = "Некорректные данные от API Мосбиржи: отсутствует секция candles"
+            logger.error(msg)
+            raise MoexClientError(msg)
 
         columns = candles["columns"]
         data_rows = candles["data"]
@@ -104,26 +104,29 @@ class MoexClient:
             "close",
             "volume",
             "begin",
+            "boardid",
         ]
         for col in required_columns:
             if col not in columns:
-                raise MoexClientError(
-                    f"Некорректные данные от API Мосбиржи: нет колонки {col}"
-                )
+                msg = f"Некорректные данные от API Мосбиржи: нет колонки {col}"
+                logger.error(msg)
+                raise MoexClientError(msg)
 
         col_index = {col: columns.index(col) for col in columns}
 
-        def parse_float(value) -> Optional[float]:
+        def parse_float(value: object) -> Optional[float]:
             if value is None:
                 return None
             try:
                 number = float(value)
             except (TypeError, ValueError) as exc:
-                raise MoexClientError(
-                    f"Некорректное числовое значение в ответе API: {value}"
-                ) from exc
+                msg = f"Некорректное числовое значение в ответе API: {value}"
+                logger.error(msg)
+                raise MoexClientError(msg) from exc
             if number < 0:
-                raise MoexClientError(f"Отрицательное значение в данных API: {value}")
+                msg = f"Отрицательное значение в данных API: {value}"
+                logger.error(msg)
+                raise MoexClientError(msg)
             return number
 
         records_by_date: Dict[date, CandleRecord] = {}
@@ -132,19 +135,19 @@ class MoexClient:
                 begin_str = row[col_index["begin"]]
                 day = datetime.fromisoformat(begin_str).date()
             except Exception as exc:
-                raise MoexClientError(
-                    f"Некорректная дата свечи в ответе API: {row}"
-                ) from exc
+                msg = f"Некорректная дата свечи в ответе API: {row}"
+                logger.error(msg)
+                raise MoexClientError(msg) from exc
 
             if day < start_date or day > end_date:
                 # Игнорируем записи вне запрошенного периода
                 continue
 
-            board = (
-                row[col_index["boardid"]]
-                if "boardid" in col_index
-                else self.EXPECTED_BOARD
-            )
+            board = row[col_index["boardid"]]
+            if board != self.EXPECTED_BOARD:
+                msg = f"Некорректные данные от API Мосбиржи: boardid={board}"
+                logger.error(msg)
+                raise MoexClientError(msg)
 
             record = CandleRecord(
                 date=day,
@@ -158,7 +161,6 @@ class MoexClient:
             )
             records_by_date[day] = record
 
-        # Обеспечение наличия всех дат и заполнение пропущенных значений None
         records: List[CandleRecord] = []
         current_date = start_date
         while current_date <= end_date:
@@ -178,4 +180,10 @@ class MoexClient:
             records.append(record)
             current_date += timedelta(days=1)
 
+        logger.info(
+            "Получено %s записей свечей за период %s - %s",
+            len(records),
+            start_date,
+            end_date,
+        )
         return records
