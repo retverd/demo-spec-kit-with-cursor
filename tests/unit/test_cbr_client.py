@@ -1,4 +1,4 @@
-"""Unit tests for CBR client."""
+"""Юнит-тесты клиента ЦБ РФ."""
 
 from datetime import date, timedelta
 from unittest.mock import Mock, patch
@@ -11,12 +11,12 @@ from src.services.cbr_client import CBRClient, CBRClientError
 
 
 class TestCBRClientGetExchangeRates:
-    """Tests for CBRClient.get_exchange_rates method."""
+    """Проверка метода CBRClient.get_exchange_rates."""
     
     @patch('src.services.cbr_client.requests.Session')
     def test_get_exchange_rates_success_with_complete_data(self, mock_session_class):
-        """Test successful extraction with all 7 days of data."""
-        # Mock XML response with windows-1251 encoding
+        """Успешное получение с полными 7 днями данных."""
+        # Мокаем XML-ответ в windows-1251
         xml_content = '''<?xml version="1.0" encoding="windows-1251"?>
 <ValCurs ID="R01235" DateRange1="25.11.2025" DateRange2="01.12.2025" name="Foreign Currency Market Dynamic">
     <Record Date="25.11.2025" Id="R01235">
@@ -56,7 +56,7 @@ class TestCBRClientGetExchangeRates:
     </Record>
 </ValCurs>'''
         
-        # Encode to windows-1251 for mock
+        # Кодируем в windows-1251 для мока
         encoded_content = xml_content.encode('windows-1251')
         mock_response = Mock()
         mock_response.status_code = 200
@@ -71,7 +71,7 @@ class TestCBRClientGetExchangeRates:
         
         result = client.get_exchange_rates(start_date, end_date)
         
-        # Verify result
+        # Проверяем результат
         assert len(result) == 7
         assert all(isinstance(r, ExchangeRateRecord) for r in result)
         assert result[0].date == date(2025, 11, 25)
@@ -79,17 +79,17 @@ class TestCBRClientGetExchangeRates:
         assert result[-1].date == date(2025, 12, 1)
         assert result[-1].exchange_rate_value == 78.80
         
-        # Verify request was made correctly
+        # Проверяем корректность запроса
         mock_session.get.assert_called_once()
         call_args = mock_session.get.call_args
-        assert 'timeout' in call_args.kwargs
-        assert call_args.kwargs['timeout'] == 15
-        assert 'R01235' in call_args.args[0]  # Currency code in URL
+        assert "timeout" in call_args.kwargs
+        assert call_args.kwargs["timeout"] == 15
+        assert "R01235" in call_args.args[0]  # код валюты в URL
     
     @patch('src.services.cbr_client.requests.Session')
     def test_get_exchange_rates_with_missing_days(self, mock_session_class):
-        """Test extraction with missing days (weekends/holidays) filled with null."""
-        # Mock XML response with only 5 days (missing weekends)
+        """Получение с пропущенными днями (выходные) заполненными None."""
+        # Мокаем XML с 5 днями (выходные отсутствуют)
         xml_content = '''<?xml version="1.0" encoding="windows-1251"?>
 <ValCurs ID="R01235" DateRange1="25.11.2025" DateRange2="01.12.2025" name="Foreign Currency Market Dynamic">
     <Record Date="25.11.2025" Id="R01235">
@@ -133,10 +133,10 @@ class TestCBRClientGetExchangeRates:
         
         result = client.get_exchange_rates(start_date, end_date)
         
-        # Verify result has 7 records
+        # Должно быть 7 записей
         assert len(result) == 7
         
-        # Verify missing days (27.11 and 28.11) have null rates
+        # Пропущенные дни (27.11, 28.11) должны быть с None
         dates_with_rates = {r.date for r in result if r.exchange_rate_value is not None}
         assert date(2025, 11, 25) in dates_with_rates
         assert date(2025, 11, 26) in dates_with_rates
@@ -146,18 +146,18 @@ class TestCBRClientGetExchangeRates:
         assert date(2025, 11, 30) in dates_with_rates
         assert date(2025, 12, 1) in dates_with_rates
         
-        # Verify all dates are present
+        # Проверяем наличие всех дат
         all_dates = {r.date for r in result}
         expected_dates = {start_date + timedelta(days=i) for i in range(7)}
         assert all_dates == expected_dates
 
 
 class TestCBRClientErrorHandling:
-    """Tests for CBR client error handling."""
+    """Проверка обработки ошибок клиента ЦБ РФ."""
     
     @patch('src.services.cbr_client.requests.Session')
     def test_get_exchange_rates_404_error(self, mock_session_class):
-        """Test handling of 404 Not Found error."""
+        """Обработка ошибки 404 Not Found."""
         mock_response = Mock()
         mock_response.status_code = 404
         http_error = requests.HTTPError("404 Not Found")
@@ -178,7 +178,7 @@ class TestCBRClientErrorHandling:
     
     @patch('src.services.cbr_client.requests.Session')
     def test_get_exchange_rates_500_error(self, mock_session_class):
-        """Test handling of 500 Internal Server Error."""
+        """Обработка ошибки 500 Internal Server Error."""
         mock_response = Mock()
         mock_response.status_code = 500
         http_error = requests.HTTPError("500 Internal Server Error")
@@ -199,7 +199,7 @@ class TestCBRClientErrorHandling:
     
     @patch('src.services.cbr_client.requests.Session')
     def test_get_exchange_rates_timeout_error(self, mock_session_class):
-        """Test handling of network timeout."""
+        """Обработка сетевого таймаута."""
         mock_session = Mock()
         mock_session.get.side_effect = requests.Timeout("Request timed out")
         mock_session_class.return_value = mock_session
@@ -215,7 +215,7 @@ class TestCBRClientErrorHandling:
     
     @patch('src.services.cbr_client.requests.Session')
     def test_get_exchange_rates_connection_error(self, mock_session_class):
-        """Test handling of connection failure."""
+        """Обработка ошибки соединения."""
         mock_session = Mock()
         mock_session.get.side_effect = requests.ConnectionError("Connection failed")
         mock_session_class.return_value = mock_session
@@ -231,7 +231,7 @@ class TestCBRClientErrorHandling:
     
     @patch('src.services.cbr_client.requests.Session')
     def test_get_exchange_rates_invalid_xml(self, mock_session_class):
-        """Test handling of invalid XML response."""
+        """Обработка некорректного XML-ответа."""
         mock_response = Mock()
         mock_response.status_code = 200
         mock_response.content = b"Invalid XML content"
@@ -250,11 +250,11 @@ class TestCBRClientErrorHandling:
 
 
 class TestCBRClientDateRangeHandling:
-    """Tests for CBR client date range handling."""
+    """Проверка работы с диапазоном дат в клиенте ЦБ РФ."""
     
     @patch('src.services.cbr_client.requests.Session')
     def test_get_exchange_rates_date_range_calculation(self, mock_session_class):
-        """Test that date range is correctly calculated and all dates are included."""
+        """Диапазон дат вычисляется корректно, включены все даты."""
         xml_content = '''<?xml version="1.0" encoding="windows-1251"?>
 <ValCurs ID="R01235" DateRange1="25.11.2025" DateRange2="01.12.2025" name="Foreign Currency Market Dynamic">
     <Record Date="25.11.2025" Id="R01235">
@@ -283,13 +283,13 @@ class TestCBRClientDateRangeHandling:
         
         result = client.get_exchange_rates(start_date, end_date)
         
-        # Verify all 7 dates are present
+        # Все 7 дат присутствуют
         assert len(result) == 7
         result_dates = [r.date for r in result]
         expected_dates = [start_date + timedelta(days=i) for i in range(7)]
         assert result_dates == expected_dates
         
-        # Verify URL was constructed with correct date format (DD/MM/YYYY)
+        # Проверяем, что в URL даты в формате DD/MM/YYYY
         call_args = mock_session.get.call_args
         url = call_args[0][0]  # First positional argument
         assert '25/11/2025' in url

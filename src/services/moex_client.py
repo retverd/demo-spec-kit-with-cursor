@@ -1,0 +1,189 @@
+"""Клиент ISS‑API Мосбиржи для дневных свечей LQDT/TQTF."""
+
+import logging
+import sys
+from datetime import date, datetime, timedelta
+from typing import Dict, List, Optional
+
+import requests
+
+from src.models.candles import CandleRecord
+
+logger = logging.getLogger(__name__)
+
+
+class MoexClientError(Exception):
+    """Exception raised for MOEX client errors."""
+
+    pass
+
+
+class MoexClient:
+    """Клиент для получения дневных свечей LQDT/TQTF через ISS‑API Мосбиржи."""
+
+    BASE_URL = "https://iss.moex.com/iss/engines/stock/markets/shares/boards/TQTF/securities/LQDT/candles.json"
+    TIMEOUT_SECONDS = 15
+    EXPECTED_BOARD = "TQTF"
+    INSTRUMENT = "LQDT"
+
+    def __init__(self, session: Optional[requests.Session] = None):
+        self.session = session or requests.Session()
+
+    def get_daily_candles(self, start_date: date, end_date: date) -> List[CandleRecord]:
+        """
+        Retrieve daily candles for the given period.
+
+        Returns:
+            List of CandleRecord with one entry per date in [start_date, end_date].
+        """
+        params = {
+            "from": start_date.isoformat(),
+            "till": end_date.isoformat(),
+            "interval": 24,
+        }
+        try:
+            logger.info("Запрос свечей LQDT/TQTF: %s - %s", start_date, end_date)
+            response = self.session.get(
+                self.BASE_URL, params=params, timeout=self.TIMEOUT_SECONDS
+            )
+            response.raise_for_status()
+            payload = response.json()
+            return self._parse_payload(payload, start_date, end_date)
+        except requests.Timeout as e:
+            msg = "Таймаут при обращении к API Мосбиржи."
+            logger.error(msg)
+            print(msg, file=sys.stderr)
+            raise MoexClientError(msg) from e
+        except requests.ConnectionError as e:
+            msg = "Сетевая ошибка при обращении к API Мосбиржи."
+            logger.error(msg)
+            print(msg, file=sys.stderr)
+            raise MoexClientError(msg) from e
+        except requests.HTTPError as e:
+            status = (
+                e.response.status_code if getattr(e, "response", None) else "unknown"
+            )
+            msg = f"API Мосбиржи вернуло ошибку HTTP {status}"
+            logger.error(msg)
+            print(msg, file=sys.stderr)
+            raise MoexClientError(msg) from e
+        except ValueError as e:
+            msg = "Некорректный JSON от API Мосбиржи."
+            logger.error(msg)
+            print(msg, file=sys.stderr)
+            raise MoexClientError(msg) from e
+        except KeyError as e:
+            msg = f"Ответ API Мосбиржи не содержит ожидаемых данных: отсутствует {e}"
+            logger.error(msg)
+            print(msg, file=sys.stderr)
+            raise MoexClientError(msg) from e
+        except MoexClientError:
+            # Already logged; just re-raise
+            raise
+        except Exception as e:
+            msg = f"Неожиданная ошибка при обращении к API Мосбиржи: {e}"
+            logger.error(msg, exc_info=True)
+            print(msg, file=sys.stderr)
+            raise MoexClientError(msg) from e
+
+    def _parse_payload(
+        self, payload: Dict, start_date: date, end_date: date
+    ) -> List[CandleRecord]:
+        candles = payload.get("candles")
+        if not candles or "columns" not in candles or "data" not in candles:
+            msg = "Некорректные данные от API Мосбиржи: отсутствует секция candles"
+            logger.error(msg)
+            raise MoexClientError(msg)
+
+        columns = candles["columns"]
+        data_rows = candles["data"]
+        required_columns = [
+            "open",
+            "high",
+            "low",
+            "close",
+            "volume",
+            "begin",
+            "boardid",
+        ]
+        for col in required_columns:
+            if col not in columns:
+                msg = f"Некорректные данные от API Мосбиржи: нет колонки {col}"
+                logger.error(msg)
+                raise MoexClientError(msg)
+
+        col_index = {col: columns.index(col) for col in columns}
+
+        def parse_float(value: object) -> Optional[float]:
+            if value is None:
+                return None
+            try:
+                number = float(value)
+            except (TypeError, ValueError) as exc:
+                msg = f"Некорректное числовое значение в ответе API: {value}"
+                logger.error(msg)
+                raise MoexClientError(msg) from exc
+            if number < 0:
+                msg = f"Отрицательное значение в данных API: {value}"
+                logger.error(msg)
+                raise MoexClientError(msg)
+            return number
+
+        records_by_date: Dict[date, CandleRecord] = {}
+        for row in data_rows:
+            try:
+                begin_str = row[col_index["begin"]]
+                day = datetime.fromisoformat(begin_str).date()
+            except Exception as exc:
+                msg = f"Некорректная дата свечи в ответе API: {row}"
+                logger.error(msg)
+                raise MoexClientError(msg) from exc
+
+            if day < start_date or day > end_date:
+                # Игнорируем записи вне запрошенного периода
+                continue
+
+            board = row[col_index["boardid"]]
+            if board != self.EXPECTED_BOARD:
+                msg = f"Некорректные данные от API Мосбиржи: boardid={board}"
+                logger.error(msg)
+                raise MoexClientError(msg)
+
+            record = CandleRecord(
+                date=day,
+                open=parse_float(row[col_index["open"]]),
+                high=parse_float(row[col_index["high"]]),
+                low=parse_float(row[col_index["low"]]),
+                close=parse_float(row[col_index["close"]]),
+                volume=parse_float(row[col_index["volume"]]),
+                instrument=self.INSTRUMENT,
+                board=self.EXPECTED_BOARD,
+            )
+            records_by_date[day] = record
+
+        records: List[CandleRecord] = []
+        current_date = start_date
+        while current_date <= end_date:
+            record = records_by_date.get(
+                current_date,
+                CandleRecord(
+                    date=current_date,
+                    open=None,
+                    high=None,
+                    low=None,
+                    close=None,
+                    volume=None,
+                    instrument=self.INSTRUMENT,
+                    board=self.EXPECTED_BOARD,
+                ),
+            )
+            records.append(record)
+            current_date += timedelta(days=1)
+
+        logger.info(
+            "Получено %s записей свечей за период %s - %s",
+            len(records),
+            start_date,
+            end_date,
+        )
+        return records

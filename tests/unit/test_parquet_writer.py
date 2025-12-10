@@ -1,4 +1,4 @@
-"""Unit tests for Parquet writer."""
+"""Юнит-тесты ParquetWriter."""
 
 import os
 import tempfile
@@ -14,10 +14,10 @@ from src.services.parquet_writer import ParquetWriter
 
 
 class TestParquetWriterWriteExchangeRates:
-    """Tests for ParquetWriter.write_exchange_rates method."""
+    """Проверка метода ParquetWriter.write_exchange_rates."""
     
     def test_write_exchange_rates_creates_file(self):
-        """Test that write_exchange_rates creates a Parquet file."""
+        """Создаётся Parquet-файл."""
         with tempfile.TemporaryDirectory() as tmpdir:
             writer = ParquetWriter()
             records = [
@@ -41,7 +41,7 @@ class TestParquetWriterWriteExchangeRates:
             assert filename.endswith('.parquet')
     
     def test_write_exchange_rates_stores_metadata(self):
-        """Test that file-level metadata is stored correctly."""
+        """Метаданные файла сохраняются корректно."""
         with tempfile.TemporaryDirectory() as tmpdir:
             writer = ParquetWriter()
             records = [
@@ -61,7 +61,7 @@ class TestParquetWriterWriteExchangeRates:
             
             filename = writer.write_exchange_rates(records, metadata, tmpdir)
             
-            # Read metadata from file (use context manager to ensure proper cleanup)
+            # Читаем метаданные из файла (контекст для корректного закрытия)
             with pq.ParquetFile(filename) as parquet_file:
                 file_metadata = parquet_file.metadata.metadata
                 
@@ -71,7 +71,7 @@ class TestParquetWriterWriteExchangeRates:
                 assert b"period_end" in file_metadata
                 assert b"data_source" in file_metadata
                 
-                # Decode metadata values
+                # Декодируем значения метаданных
                 decoded_metadata = {
                     k.decode('utf-8'): v.decode('utf-8')
                     for k, v in file_metadata.items()
@@ -82,7 +82,7 @@ class TestParquetWriterWriteExchangeRates:
                 assert decoded_metadata["data_source"] == "CBR"
     
     def test_write_exchange_rates_stores_data_correctly(self):
-        """Test that exchange rate data is stored correctly in Parquet file."""
+        """Данные курса сохраняются корректно."""
         with tempfile.TemporaryDirectory() as tmpdir:
             writer = ParquetWriter()
             records = [
@@ -102,7 +102,7 @@ class TestParquetWriterWriteExchangeRates:
             
             filename = writer.write_exchange_rates(records, metadata, tmpdir)
             
-            # Read data from file
+            # Читаем данные из файла
             table = pq.read_table(filename)
             df = table.to_pandas()
             
@@ -111,7 +111,7 @@ class TestParquetWriterWriteExchangeRates:
             assert 'exchange_rate_value' in df.columns
             assert 'currency_pair' in df.columns
             
-            # Verify data values
+            # Проверяем значения
             assert df.iloc[0]['date'] == date(2025, 11, 25)
             assert df.iloc[0]['exchange_rate_value'] == 78.50
             assert df.iloc[-1]['date'] == date(2025, 12, 1)
@@ -120,10 +120,10 @@ class TestParquetWriterWriteExchangeRates:
 
 
 class TestParquetWriterWithNullValues:
-    """Tests for Parquet writer with null rate values."""
+    """Проверка обработки None значений."""
     
     def test_write_exchange_rates_with_null_values(self):
-        """Test that null rate values are handled correctly."""
+        """None значения обрабатываются корректно."""
         with tempfile.TemporaryDirectory() as tmpdir:
             writer = ParquetWriter()
             records = [
@@ -143,24 +143,24 @@ class TestParquetWriterWithNullValues:
             
             filename = writer.write_exchange_rates(records, metadata, tmpdir)
             
-            # Read data from file
+            # Читаем данные
             table = pq.read_table(filename)
             df = table.to_pandas()
             
             assert len(df) == 7
-            # Check that null values are preserved
+            # Проверяем, что None сохранены
             assert pd.isna(df.iloc[1]['exchange_rate_value'])
             assert pd.isna(df.iloc[3]['exchange_rate_value'])
-            # Check that non-null values are present
+            # Проверяем ненулевые значения
             assert df.iloc[0]['exchange_rate_value'] == 78.50
             assert df.iloc[2]['exchange_rate_value'] == 78.50
 
 
 class TestParquetWriterFilenameGeneration:
-    """Tests for Parquet filename generation."""
+    """Проверка генерации имени файла Parquet."""
     
     def test_filename_includes_period_dates(self):
-        """Test that filename includes period start and end dates."""
+        """Имя содержит даты начала и конца периода."""
         with tempfile.TemporaryDirectory() as tmpdir:
             writer = ParquetWriter()
             records = [
@@ -186,7 +186,7 @@ class TestParquetWriterFilenameGeneration:
             assert "rub_usd" in basename.lower()
     
     def test_filename_includes_timestamp(self):
-        """Test that filename includes timestamp."""
+        """Имя содержит метку времени."""
         with tempfile.TemporaryDirectory() as tmpdir:
             writer = ParquetWriter()
             records = [
@@ -207,15 +207,15 @@ class TestParquetWriterFilenameGeneration:
             filename = writer.write_exchange_rates(records, metadata, tmpdir)
             basename = os.path.basename(filename)
             
-            # Filename pattern: rub_usd_YYYY-MM-DD_to_YYYY-MM-DD_YYYY-MM-DD_HHMMSS.parquet
-            # Should contain report_date and timestamp
+            # Шаблон: rub_usd_YYYY-MM-DD_to_YYYY-MM-DD_YYYY-MM-DD_HHMMSS.parquet
+            # Должен содержать report_date и timestamp
             assert "2025-12-02" in basename
             # Should have timestamp pattern (HHMMSS)
             parts = basename.replace('.parquet', '').split('_')
             assert len(parts) >= 5  # rub, usd, start, to, end, date, timestamp
     
     def test_filename_pattern_matches_specification(self):
-        """Test that filename matches the specified pattern."""
+        """Имя соответствует ожидаемому шаблону."""
         with tempfile.TemporaryDirectory() as tmpdir:
             writer = ParquetWriter()
             records = [
@@ -236,17 +236,17 @@ class TestParquetWriterFilenameGeneration:
             filename = writer.write_exchange_rates(records, metadata, tmpdir)
             basename = os.path.basename(filename)
             
-            # Pattern: rub_usd_YYYY-MM-DD_to_YYYY-MM-DD_YYYY-MM-DD_HHMMSS.parquet
+            # Шаблон: rub_usd_YYYY-MM-DD_to_YYYY-MM-DD_YYYY-MM-DD_HHMMSS.parquet
             assert basename.startswith("rub_usd_")
             assert "_to_" in basename
             assert basename.endswith(".parquet")
 
 
 class TestParquetWriterMetadataReading:
-    """Tests for reading metadata from Parquet files."""
+    """Чтение метаданных из файлов Parquet."""
     
     def test_read_metadata_from_file(self):
-        """Test that metadata can be read back from the file."""
+        """Метаданные читаются из файла."""
         with tempfile.TemporaryDirectory() as tmpdir:
             writer = ParquetWriter()
             records = [
@@ -266,11 +266,11 @@ class TestParquetWriterMetadataReading:
             
             filename = writer.write_exchange_rates(records, metadata, tmpdir)
             
-            # Read metadata using Parquet API (use context manager to ensure proper cleanup)
+            # Читаем метаданные через Parquet API (контекст для корректного закрытия)
             with pq.ParquetFile(filename) as parquet_file:
                 file_metadata = parquet_file.metadata.metadata
                 
-                # Decode metadata
+                # Декодируем метаданные
                 decoded_metadata = {
                     k.decode('utf-8'): v.decode('utf-8')
                     for k, v in file_metadata.items()
