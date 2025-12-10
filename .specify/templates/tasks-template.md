@@ -11,6 +11,7 @@ description: "Task list template for feature implementation"
 > **Примечание**: Согласно конституции проекта, все задачи и комментарии должны быть написаны на русском языке.
 
 **Tests**: The examples below include test tasks. Tests are OPTIONAL - only include them if explicitly requested in the feature specification.
+**Интеграционные/перф тесты**: Если применимо, тесты должны включать проверки с реальными системами или масимально близким окружениям.
 
 **Organization**: Tasks are grouped by user story to enable independent implementation and testing of each story.
 

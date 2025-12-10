@@ -5,8 +5,6 @@
 
 **Note**: This template is filled in by the `/speckit.plan` command. See `.specify/templates/commands/plan.md` for the execution workflow.
 
-> **Примечание**: Согласно конституции проекта, все планы и спецификации должны быть написаны на русском языке.
-
 ## Summary
 
 [Extract from feature spec: primary requirement + technical approach from research]
@@ -34,6 +32,12 @@
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
 [Gates determined based on constitution file]
+
+- Все артефакты (план, спецификация, заметки) на русском языке
+- План тестирования содержит интеграционные проверки с реальными системами; перфоманс-тесты запланированы только на реальных интеграциях
+- Независимые компоненты имеют автономные тестовые наборы/пайплайны без перекрестных зависимостей
+- Ключевые бизнес-функции покрыты интеграционными сценариями и критичными кейсами
+- Процесс воспроизводим: зафиксированы версии инструментов, seed-значения и окружение
 
 ## Project Structure
 
