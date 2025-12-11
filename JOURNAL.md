@@ -310,7 +310,7 @@
 > [!WARNING]
 > Почему-то уточнение на немецком!
 
-#### Commit [](https://github.com/retverd/demo-spec-kit-with-cursor/commit/)
+#### Commit [eda212c3ee67f58e7f2eb47fc3cb907aac7e5aad](https://github.com/retverd/demo-spec-kit-with-cursor/commit/eda212c3ee67f58e7f2eb47fc3cb907aac7e5aad)
 
 Составляем план работ с /specit.plan
 
@@ -335,3 +335,21 @@
 
 > [!INFO]
 > В [plan.md](specs/001-require-interval-days/plan.md) учтены новые требования по тестированию (интеграционные тесты с реальными системами и автономное тестирование независимых компонент), однако в более ранние планы и спецификации изменения не внесены.
+
+#### Commit [](https://github.com/retverd/demo-spec-kit-with-cursor/commit/)
+
+Составляем список задач с /specit.tasks:
+
+> Created [tasks.md](specs/001-require-interval-days/tasks.md) with dependency-ordered, story-grouped checklist tasks.
+>
+> - Total tasks: 21
+> - By story: US1=5, US2=4, US3=4 (Setup=2, Foundational=4, Polish=2)
+> - Parallel opportunities: highlighted per phase (e.g., Foundational T004/T006; US1 T007/T008/T009/T010; US2 T012/T013/T014; US3 T016/T017, then T018/T019).
+> - Independent test criteria: included under each story (US1 cbr success with --days; US2 moex-lqdt success with --days; US3 invalid/absent --days returns code 5, no files).
+> - MVP scope: User Story 1 (CBR with required --days).
+> - Format check: all tasks follow - [ ] T### [P?] [US?] Description with file path.
+
+> [!WARNING]
+>
+> - Все задачи описаны корректно, хоть и достаточно многословно.
+> - Есть реализация требования тестирования пользовательских историй независимо друг от друга, однако нет реализации требования проведения интеграционных тестов с реальной системой.
