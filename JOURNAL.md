@@ -215,7 +215,7 @@
 > [!TIP]
 > Генератор commit messages продолжает писать на русском, чудеса.
 
-### 2025-12-09
+### 2025-12-10
 
 #### Commit [f2c9cdb083be8db860424f33fa95a955363148cf](https://github.com/retverd/demo-spec-kit-with-cursor/commit/f2c9cdb083be8db860424f33fa95a955363148cf)
 
@@ -251,8 +251,6 @@
 - хотя бы часть интеграционных тестов должна быть на взаимодействие с реальной системой, особенно тесты на производительность;
 - должна быть возможность тестировать разные компоненты независимо друг от друга, если их функционал не пересекается.
 
-> Итог:
->
 > - Обновил принцип тестирования: обязательная часть интеграционных тестов теперь должна идти против реальных систем (особенно для перфоманс-проверок), а независимые компоненты требуют самостоятельных тестовых наборов без скрытых связей. 75:77:.specify/memory/constitution.md
 > - Версию конституции поднял до 1.2.0 с датой 2025-12-10; добавлен Sync Impact Report. 14:18:.specify/memory/constitution.md
 > - Синхронизировал шаблоны: в планах добавлены ворота про реальные интеграционные тесты и независимость компонентов, в спецификациях — напоминание про реальные интеграционные/перф-сценарии, в задачах — требование включать такие прогоны при необходимости. 32:38:.specify/templates/plan-template.md 8:12:.specify/templates/spec-template.md 13:15:.specify/templates/tasks-template.md
@@ -272,7 +270,7 @@
 > [!TIP]
 > Два последних запроса запускал дважды для проверки, модель GPT-5.1 Codex Max, результаты разные. В первом варианте были более детальные правки и более лаконичное описание.
 
-#### Commit [TBD](https://github.com/retverd/demo-spec-kit-with-cursor/commit/)
+#### Commit [caa4fe3b4cd6165570f7a91ef3e7b3afb7d2e014](https://github.com/retverd/demo-spec-kit-with-cursor/commit/caa4fe3b4cd6165570f7a91ef3e7b3afb7d2e014)
 
 Приступим к исправлению проблем проектирования функционала в первых двух изменениях:
 
@@ -292,3 +290,26 @@
 
 > [!WARNING]
 > В тестах для MOEX неверное предположение о наборе колонок, возвращаемых для свечей, надо будет дать ему сравнение с реальным ответом API для корректирровки.
+
+### 2025-12-11
+
+#### Commit [TBD](https://github.com/retverd/demo-spec-kit-with-cursor/commit/)
+
+Проверяю корректность требований командой /speckit.clarify:
+
+> Asking max days range:
+>
+> - A Enforce 1–30 days (inclusive)
+> - B Enforce 1–60 days (inclusive)
+> - C Enforce 1–365 days (inclusive)
+> - D Minimum 1, no explicit max (warn on large)
+> - Short Provide a different short answer (<=5 words)
+>
+> C
+>
+> Принял Option C: диапазон days — 1–365. Спецификация обновлена [spec.md](specs/001-require-interval-days/spec.md) для верхней границы, FR-003 и SC-001/002/004. Weitere Wünsche?
+
+<!-- -->
+
+> [!WARNING]
+> Почему-то уточнение на немецком!
