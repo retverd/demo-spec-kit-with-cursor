@@ -7,7 +7,7 @@
 - ☑ Модернизация конституции проекта с учетом недостатков выявленных при создании первого изменения
 - ☑ Создание изолированной второго изменения в проекте через исполнение всех шагов последовательно
 - ☑ Модернизация конституции проекта с учетом недостатков выявленных при создании второго изменения
-- ☐ Модернизация первой и второй изменений одновременно
+- ☐ Модернизация первого и второго изменений одновременно
 - ☐ Подведение итогов
 
 Версия:
@@ -212,7 +212,7 @@
 
 Явно нужно пройтись линтером по всем файлам и исправить ошибки.
 
-> [!TIP]
+> [!INFO]
 > Генератор commit messages продолжает писать на русском, чудеса.
 
 ### 2025-12-10
@@ -259,16 +259,12 @@
 
 > [!CAUTION]
 > Странный вывод - внесенное правило требует перестроения всех тестов, которое не было сделано.
+> Два последних запроса запускал дважды для проверки, модель GPT-5.1 Codex Max, результаты разные. В первом варианте были более детальные правки и более лаконичное описание.
 
 <!-- -->
 
 > [!WARNING]
 > После обновления шаблонов [plan-template.md](.specify\templates\plan-template.md), [spec-template.md](.specify\templates\spec-template.md) и [tasks-template.md](.specify\templates\tasks-template.md) они содержат инструкции как раз русском, так и на английском языке.
-
-<!-- -->
-
-> [!TIP]
-> Два последних запроса запускал дважды для проверки, модель GPT-5.1 Codex Max, результаты разные. В первом варианте были более детальные правки и более лаконичное описание.
 
 #### Commit [caa4fe3b4cd6165570f7a91ef3e7b3afb7d2e014](https://github.com/retverd/demo-spec-kit-with-cursor/commit/caa4fe3b4cd6165570f7a91ef3e7b3afb7d2e014)
 
@@ -293,7 +289,7 @@
 
 ### 2025-12-11
 
-#### Commit [TBD](https://github.com/retverd/demo-spec-kit-with-cursor/commit/)
+#### Commit [74bd77c05fa9177f9103a3e83df64e7c7630e33a](https://github.com/retverd/demo-spec-kit-with-cursor/commit/74bd77c05fa9177f9103a3e83df64e7c7630e33a)
 
 Проверяю корректность требований командой /speckit.clarify:
 
@@ -313,3 +309,29 @@
 
 > [!WARNING]
 > Почему-то уточнение на немецком!
+
+#### Commit [](https://github.com/retverd/demo-spec-kit-with-cursor/commit/)
+
+Составляем план работ с /specit.plan
+
+> План и артефакты готовы.
+>
+> - План обновлён с конкретным контекстом и gate-статусами: [plan.md](specs/001-require-interval-days/plan.md).
+> - Проведено исследование и зафиксированы решения (диапазон 1–365, предвалидация, расчёт периода, коды выхода): [research.md](specs/001-require-interval-days/research.md).
+> - Описана модель данных для days/периода и артефактов: [data-model.md](specs/001-require-interval-days/data-model.md).
+> - Контракт CLI с обязательным --days и поведением для обеих подкоманд: [cli-contract.md](specs/001-require-interval-days/contracts/cli-contract.md).
+> - Quickstart с примерами запуска и кодами выхода: [quickstart.md](specs/001-require-interval-days/quickstart.md).
+> - Агентный контекст обновлён через [update-agent-context.ps1](.specify/scripts/powershell/update-agent-context.ps1) -AgentType cursor-agent.
+>
+> Состояние: все NEEDS CLARIFICATION закрыты, Constitution Check после дизайна — PASS.
+
+<!-- -->
+
+> [!WARNING]
+> В [plan.md](specs/001-require-interval-days/plan.md) зачем-то добавлено условие времени проведения валидации: "Валидация `--days` и расчёт периода ≤50 мс", убрал.
+> Несмотря на явные требования к русскому языку, документы частично формируются на английском.
+
+<!-- -->
+
+> [!INFO]
+> В [plan.md](specs/001-require-interval-days/plan.md) учтены новые требования по тестированию (интеграционные тесты с реальными системами и автономное тестирование независимых компонент), однако в более ранние планы и спецификации изменения не внесены.

@@ -3,6 +3,7 @@
 Auto-generated from all feature plans. Last updated: 2025-12-02
 
 ## Active Technologies
+- Локальные файлы Parquet/XLSX в рабочей директории. (001-require-interval-days)
 
 - Python 3.14 + requests (HTTP client), pyarrow (Parquet operations), datetime (stdlib, date handling) (001-cbr-exchange-rate)
 - Parquet files (local filesystem) (001-cbr-exchange-rate)
