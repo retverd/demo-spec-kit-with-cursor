@@ -7,9 +7,37 @@ from src.models.exchange_rate import ExchangeRateRecord
 from src.utils.validators import (
     validate_candles,
     validate_date,
+    validate_days,
     validate_rate,
     validate_records,
 )
+
+
+class TestValidateDays:
+    """Проверка validate_days для CLI параметра --days."""
+
+    def test_valid_range_values(self):
+        assert validate_days(1)[0] is True
+        assert validate_days("365")[0] is True
+
+    def test_missing_days(self):
+        is_valid, error = validate_days(None)
+        assert is_valid is False
+        assert "обязателен" in error
+
+    def test_non_integer_days(self):
+        is_valid, error = validate_days("abc")
+        assert is_valid is False
+        assert "целым числом" in error
+
+    def test_out_of_range_days(self):
+        is_valid, error = validate_days(0)
+        assert is_valid is False
+        assert "1–365" in error
+
+        is_valid, error = validate_days(366)
+        assert is_valid is False
+        assert "1–365" in error
 
 
 class TestValidateDate:

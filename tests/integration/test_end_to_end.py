@@ -10,12 +10,12 @@ import openpyxl
 import pyarrow.parquet as pq
 import pytest
 
-from src.cli.main import main
+from src.cli.main import EXIT_VALIDATION_ERROR, main
 from src.models.exchange_rate import ExchangeRateRecord
 from src.services.cbr_client import CBRClient
 from src.services.parquet_writer import ParquetWriter
 from src.services.moex_client import MoexClient
-from src.utils.date_utils import get_last_7_days
+from src.utils.date_utils import calculate_period
 
 
 class TestEndToEndFlow:
@@ -73,36 +73,32 @@ class TestEndToEndFlow:
         mock_session_class.return_value = mock_session
 
         with tempfile.TemporaryDirectory() as tmpdir:
-        # Переходим во временный каталог
+            # Переходим во временный каталог
             original_cwd = os.getcwd()
             try:
                 os.chdir(tmpdir)
 
-                # Запуск CLI (мок)
-                with patch(
-                    "src.cli.main.ParquetWriter.write_exchange_rates"
-                ) as mock_write:
-                    mock_write.return_value = os.path.join(tmpdir, "test.parquet")
-                    exit_code = main()
+                exit_code = main(["cbr", "--days", "7"])
 
                 # Код возврата
                 assert exit_code == 0
 
-                # Parquet writer вызван
-                assert mock_write.called
-                call_args = mock_write.call_args
-                records = call_args[0][0]
-                metadata = call_args[0][1]
+                files = [f for f in os.listdir(tmpdir) if f.endswith(".parquet")]
+                assert len(files) == 1
 
-                # Проверяем записи
-                assert len(records) == 7
-                assert all(isinstance(r, ExchangeRateRecord) for r in records)
+                filename = files[0]
+                expected_start, expected_end = calculate_period(7)
+                assert expected_start.isoformat() in filename
+                assert expected_end.isoformat() in filename
 
-                # Проверяем метаданные
-                assert "report_date" in metadata
-                assert "period_start" in metadata
-                assert "period_end" in metadata
-                assert metadata["data_source"] == "CBR"
+                with pq.ParquetFile(os.path.join(tmpdir, filename)) as parquet_file:
+                    metadata = {
+                        k.decode("utf-8"): v.decode("utf-8")
+                        for k, v in parquet_file.metadata.metadata.items()
+                    }
+                    assert metadata["data_source"] == "CBR"
+                    assert metadata["period_start"] == expected_start.isoformat()
+                    assert metadata["period_end"] == expected_end.isoformat()
             finally:
                 os.chdir(original_cwd)
 
@@ -192,7 +188,7 @@ class TestCLICommandExecution:
             original_cwd = os.getcwd()
             try:
                 os.chdir(tmpdir)
-                exit_code = main()
+                exit_code = main(["cbr", "--days", "7"])
                 assert exit_code == 0
             finally:
                 os.chdir(original_cwd)
@@ -211,7 +207,7 @@ class TestCLICommandExecution:
         mock_session.get.return_value = mock_response
         mock_session_class.return_value = mock_session
 
-        exit_code = main()
+        exit_code = main(["cbr", "--days", "7"])
         assert exit_code == 1  # EXIT_CBR_API_ERROR
 
     @patch("src.services.cbr_client.requests.Session")
@@ -223,8 +219,21 @@ class TestCLICommandExecution:
         mock_session.get.side_effect = requests.Timeout("Request timed out")
         mock_session_class.return_value = mock_session
 
-        exit_code = main()
+        exit_code = main(["cbr", "--days", "7"])
         assert exit_code == 2  # EXIT_NETWORK_ERROR
+
+    def test_cli_validation_error_without_days(self, tmp_path):
+        """Ошибочный ввод (--days отсутствует) возвращает код 5 и не создаёт файлов."""
+        original_cwd = os.getcwd()
+        try:
+            os.chdir(tmp_path)
+            exit_code = main([])
+        finally:
+            os.chdir(original_cwd)
+
+        assert exit_code == EXIT_VALIDATION_ERROR
+        assert not list(tmp_path.glob("*.parquet"))
+        assert not list(tmp_path.glob("*.xlsx"))
 
 
 class TestMoexEndToEnd:
@@ -281,11 +290,14 @@ class TestMoexEndToEnd:
         original_cwd = os.getcwd()
         try:
             os.chdir(tmp_path)
-            with patch("sys.argv", ["python", "moex-lqdt"]):
+            with patch("sys.argv", ["python", "moex-lqdt", "--days", "7"]):
                 exit_code = main()
             assert exit_code == 0
             files = list(tmp_path.glob("lqdt_tqtf_*.xlsx"))
             assert len(files) == 1
+            expected_start, expected_end = calculate_period(7)
+            assert expected_start.isoformat() in files[0].name
+            assert expected_end.isoformat() in files[0].name
             wb = openpyxl.load_workbook(files[0])
             sheet = wb.active
             assert sheet.max_row == 8  # header + 7 rows
@@ -304,7 +316,7 @@ class TestMoexEndToEnd:
         mock_session.get.return_value = mock_response
         mock_session_class.return_value = mock_session
 
-        with patch("sys.argv", ["python", "moex-lqdt"]):
+        with patch("sys.argv", ["python", "moex-lqdt", "--days", "7"]):
             exit_code = main()
         assert exit_code == 1  # EXIT_API_ERROR
 
@@ -348,11 +360,14 @@ class TestMoexEndToEnd:
         original_cwd = os.getcwd()
         try:
             os.chdir(tmp_path)
-            with patch("sys.argv", ["python", "moex-lqdt"]):
+            with patch("sys.argv", ["python", "moex-lqdt", "--days", "7"]):
                 exit_code = main()
             assert exit_code == 0
             files = list(tmp_path.glob("lqdt_tqtf_*.xlsx"))
             assert len(files) == 1
+            expected_start, expected_end = calculate_period(7)
+            assert expected_start.isoformat() in files[0].name
+            assert expected_end.isoformat() in files[0].name
             wb = openpyxl.load_workbook(files[0])
             sheet = wb.active
             # Строки на весь период даже при пропусках
@@ -364,9 +379,7 @@ class TestMoexEndToEnd:
             os.chdir(original_cwd)
 
     @patch("src.services.moex_client.requests.Session")
-    def test_moex_cli_performance_under_20_seconds(
-        self, mock_session_class, tmp_path
-    ):
+    def test_moex_cli_performance_under_20_seconds(self, mock_session_class, tmp_path):
         """SC-001: выполнение сценария moex-lqdt занимает <20 секунд при моках."""
         payload = {
             "candles": {
@@ -408,7 +421,7 @@ class TestMoexEndToEnd:
         start = time.perf_counter()
         try:
             os.chdir(tmp_path)
-            with patch("sys.argv", ["python", "moex-lqdt"]):
+            with patch("sys.argv", ["python", "moex-lqdt", "--days", "7"]):
                 exit_code = main()
         finally:
             os.chdir(original_cwd)

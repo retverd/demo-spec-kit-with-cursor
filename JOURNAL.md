@@ -356,7 +356,7 @@
 > - Все задачи описаны корректно, хоть и достаточно многословно.
 > - Есть реализация требования тестирования пользовательских историй независимо друг от друга, однако нет реализации требования проведения интеграционных тестов с реальной системой.
 
-#### Commit [](https://github.com/retverd/demo-spec-kit-with-cursor/commit/)
+#### Commit [a2ca2ad66596614369c9316aa5b3c39385d32ea1](https://github.com/retverd/demo-spec-kit-with-cursor/commit/a2ca2ad66596614369c9316aa5b3c39385d32ea1)
 
 Проведен анализ всех артефактов, покрытия требований и соответствия документов, внесены исправления, в целом закрывающие все возникшие ранее вопросы.
 
@@ -381,3 +381,34 @@
 > - Success criteria обновлены в [spec.md](specs/001-require-interval-days/spec.md):
 >   - SC-004 расширен на смену месяца/високосный год;
 >   - Добавлены SC-005 (реальные прогоны CBR/MOEX с фиксацией времени отклика/пропускной способности) и SC-006 (регрессия форматов/имен файлов после обязательного --days).
+
+#### Commit [TBD](https://github.com/retverd/demo-spec-kit-with-cursor/commit/)
+
+Реализуем изменения с /speckit.implement:
+
+> Key changes:
+>
+> - Made --days mandatory with unified validation/exit helper, shared logging of period bounds, and ensured both cbr and moex-lqdt run with the calculated start/end dates before any network calls;
+> - Added reusable period utilities (calculate_period, get_period_dates) and flexible record validation including CLI-specific validate_days for the 1–365 bound;
+> - Expanded unit coverage for date utilities, validators, and CLI (positive, boundary, and error paths; includes 365-day and leap-day cases);
+> - Strengthened integration tests to verify --days affects period metadata and filenames for both CBR and MOEX flows, plus validation failure when days are missing;
+> - Updated task tracking per work completed (T001–T019 marked done in [tasks.md](specs/001-require-interval-days/tasks.md)).
+>
+> Tests:
+>
+> - pytest / python -m pytest (root): failed to run because neither pytest nor python executable is available in the current shell environment. Please run tests locally once Python/pytest are accessible.
+>
+> Open items / next steps:
+>
+> - Pending tasks in tasks.md: T020 (quickstart sync), T021 (CLI help refresh), and Phase 6 real API/regression runs (T022–T024);
+> - After enabling Python/pytest locally, rerun the full suite to verify the new --days flow end-to-end.
+
+<!-- -->
+
+> [!WARNING]
+>
+> - В [main.py](src/cli/main.py) создал функцию для единого вывода ошибок валидации с кодом EXIT_VALIDATION_ERROR, а в коде оставил множество вызовов, практически или полностью дублирующих её код.
+> - Классификатор ошибок MOEX вынесен в отдельную функцию _classify_moex_error, идентичный классификатор ошибок CBR остался вшит в коде;
+> - Зачем-то пределал функцию get_last_7_days в обертку над get_period_dates и оставил тест для нее, хотя она больше нигде не используется;
+> - По итогам разработки ИИ не смог запустить тесты не были запущены, результат: 13 failed, 58 passed in 3.29s, удалось исправить, отправив в чат вывод в консоль;
+> - Есть неиспользуемые импорты.

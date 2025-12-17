@@ -1,22 +1,35 @@
 """Утилиты расчёта диапазона дат для выгрузки курсов."""
 
 from datetime import date, timedelta
-from typing import List
+from typing import List, Tuple
 
 
-def get_last_7_days() -> List[date]:
+def calculate_period(days: int) -> Tuple[date, date]:
     """
-    Рассчитать последние 7 календарных дней: [сегодня-6, …, сегодня] (включительно, всего 7 дат).
+    Рассчитать границы периода длиной `days` дней (включительно).
+
+    Args:
+        days: Количество дней в периоде (>=1).
 
     Returns:
-        Список из 7 объектов date, начиная с сегодня минус 6 дней и заканчивая сегодня.
-        Даты расположены в хронологическом порядке (от старшей к младшей).
-
-    Пример:
-        Если сегодня 2025-12-02, возвращается:
-        [date(2025-11-26), date(2025-11-27), ..., date(2025-12-02)]
+        Кортеж (period_start, period_end), где period_end = date.today().
     """
+    if days < 1:
+        raise ValueError("days must be >= 1")
     today = date.today()
-    # Рассчитываем 7 дней: [сегодня-6, …, сегодня] включительно
-    start_date = today - timedelta(days=6)
-    return [start_date + timedelta(days=i) for i in range(7)]
+    period_start = today - timedelta(days=days - 1)
+    return period_start, today
+
+
+def get_period_dates(days: int) -> List[date]:
+    """
+    Получить последовательность дат периода длиной `days` дней.
+
+    Args:
+        days: Количество дней.
+
+    Returns:
+        Список дат от period_start до today включительно, в хронологическом порядке.
+    """
+    period_start, _ = calculate_period(days)
+    return [period_start + timedelta(days=i) for i in range(days)]

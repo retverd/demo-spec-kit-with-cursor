@@ -8,6 +8,33 @@ from src.models.candles import CandleRecord
 from src.models.exchange_rate import ExchangeRateRecord
 
 
+def validate_days(days: Union[int, str, None]) -> tuple[bool, Optional[str]]:
+    """
+    Проверить корректность параметра days.
+
+    Args:
+        days: Значение из CLI (строка или число).
+
+    Returns:
+        (is_valid, error_message)
+    """
+    if days is None:
+        return False, "Параметр --days обязателен (целое число 1–365)"
+
+    if isinstance(days, bool):
+        return False, "Параметр --days должен быть целым числом 1–365"
+
+    try:
+        days_value = int(days)
+    except (TypeError, ValueError):
+        return False, "Параметр --days должен быть целым числом 1–365"
+
+    if days_value < 1 or days_value > 365:
+        return False, "Параметр --days обязан быть в диапазоне 1–365"
+
+    return True, None
+
+
 def validate_date(date_value: date, period_start: date, period_end: date) -> bool:
     """
     Проверить, что дата входит в заданный период.
@@ -46,13 +73,16 @@ def validate_rate(rate: Optional[float]) -> bool:
 
 
 def validate_records(
-    records: List[ExchangeRateRecord], period_start: date, period_end: date
+    records: List[ExchangeRateRecord],
+    period_start: date,
+    period_end: date,
+    expected_days: Optional[int] = None,
 ) -> tuple[bool, Optional[str]]:
     """
     Проверить список записей курса.
 
     Валидируется:
-    1. Ровно 7 записей (по дню в семидневном периоде).
+    1. Количество записей соответствует длине периода.
     2. Все даты должны быть корректными и находиться внутри периода.
     3. Дубликаты дат не допускаются.
     4. Ненулевые значения курса должны быть положительными.
@@ -66,9 +96,11 @@ def validate_records(
     Returns:
         (is_valid, error_message). При успехе error_message = None.
     """
-    # Проверка на полноту: ровно 7 записей
-    if len(records) != 7:
-        return False, f"Expected 7 records, got {len(records)}"
+    total_expected = expected_days or ((period_end - period_start).days + 1)
+
+    # Проверка на полноту
+    if len(records) != total_expected:
+        return False, f"Expected {total_expected} records, got {len(records)}"
 
     # Проверка наличия всех дат периода и их уникальности
     dates_seen = set()
@@ -100,7 +132,7 @@ def validate_records(
             )
 
     # Проверка наличия всех дат периода
-    expected_dates = {period_start + timedelta(days=i) for i in range(7)}
+    expected_dates = {period_start + timedelta(days=i) for i in range(total_expected)}
     if dates_seen != expected_dates:
         missing = expected_dates - dates_seen
         return False, f"Missing dates in records: {missing}"

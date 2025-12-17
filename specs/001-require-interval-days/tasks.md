@@ -25,8 +25,8 @@
 
 **Purpose**: Подготовка окружения и зависимостей.
 
-- [ ] T001 Проверить/зафиксировать зависимости в `requirements.txt` (requests, pyarrow, openpyxl, pandas).
-- [ ] T002 Настроить базовую конфигурацию логирования CLI в `src/cli/main.py` (формат с датой/уровнем).
+- [X] T001 Проверить/зафиксировать зависимости в `requirements.txt` (requests, pyarrow, openpyxl, pandas).
+- [X] T002 Настроить базовую конфигурацию логирования CLI в `src/cli/main.py` (формат с датой/уровнем).
 
 ---
 
@@ -35,10 +35,10 @@
 **Purpose**: Общие утилиты и валидации, блокирующие все истории.
 **⚠️ CRITICAL**: Никакая пользовательская история не начинается до завершения этой фазы.
 
-- [ ] T003 Реализовать расчёт периода в `src/utils/date_utils.py` (today, period_start = today-(days-1)).
-- [ ] T004 [P] Добавить валидацию `days` (1–365, целое) в `src/utils/validators.py`.
-- [ ] T005 Настроить константы/коды выхода (EXIT_VALIDATION_ERROR=5) и единый хелпер ошибок в `src/cli/main.py`.
-- [ ] T006 [P] Подготовить общий вывод периода в логах/сообщениях в `src/cli/main.py` (start/end как строки).
+- [X] T003 Реализовать расчёт периода в `src/utils/date_utils.py` (today, period_start = today-(days-1)).
+- [X] T004 [P] Добавить валидацию `days` (1–365, целое) в `src/utils/validators.py`.
+- [X] T005 Настроить константы/коды выхода (EXIT_VALIDATION_ERROR=5) и единый хелпер ошибок в `src/cli/main.py`.
+- [X] T006 [P] Подготовить общий вывод периода в логах/сообщениях в `src/cli/main.py` (start/end как строки).
 
 ---
 
@@ -49,15 +49,15 @@
 
 ### Tests for User Story 1
 
-- [ ] T007 [P] [US1] Добавить положительные проверки расчёта периода в `tests/unit/test_date_utils.py`.
-- [ ] T008 [P] [US1] Покрыть CLI `cbr --days` юнит-тестами парсинга/логирования в `tests/unit/test_cli_main.py`.
-- [ ] T025 [P] [US1] Расширить юнит-тесты на граничные случаи (`--days 365`, смена месяца/високосный день) в `tests/unit/test_date_utils.py` и `tests/unit/test_cli_main.py`.
+- [X] T007 [P] [US1] Добавить положительные проверки расчёта периода в `tests/unit/test_date_utils.py`.
+- [X] T008 [P] [US1] Покрыть CLI `cbr --days` юнит-тестами парсинга/логирования в `tests/unit/test_cli_main.py`.
+- [X] T025 [P] [US1] Расширить юнит-тесты на граничные случаи (`--days 365`, смена месяца/високосный день) в `tests/unit/test_date_utils.py` и `tests/unit/test_cli_main.py`.
 
 ### Implementation for User Story 1
 
-- [ ] T009 [P] [US1] Обновить парсер/обработчик `cbr` в `src/cli/main.py`: обязательный `--days`, расчёт периода, вывод дат до сетевых вызовов.
-- [ ] T010 [P] [US1] Принять период в `src/services/cbr_client.py`, передавать границы в запросы и включать в метаданные/имя Parquet.
-- [ ] T011 [US1] Расширить интеграционный сценарий CBR с `--days` в `tests/integration/test_end_to_end.py` (проверка периода и имени файла).
+- [X] T009 [P] [US1] Обновить парсер/обработчик `cbr` в `src/cli/main.py`: обязательный `--days`, расчёт периода, вывод дат до сетевых вызовов.
+- [X] T010 [P] [US1] Принять период в `src/services/cbr_client.py`, передавать границы в запросы и включать в метаданные/имя Parquet.
+- [X] T011 [US1] Расширить интеграционный сценарий CBR с `--days` в `tests/integration/test_end_to_end.py` (проверка периода и имени файла).
 
 **Checkpoint**: User Story 1 работает и тестируется независимо.
 
@@ -70,13 +70,13 @@
 
 ### Tests for User Story 2
 
-- [ ] T012 [P] [US2] Добавить юнит-тесты CLI `moex-lqdt --days` для парсинга/логирования в `tests/unit/test_cli_main.py`.
+- [X] T012 [P] [US2] Добавить юнит-тесты CLI `moex-lqdt --days` для парсинга/логирования в `tests/unit/test_cli_main.py`.
 
 ### Implementation for User Story 2
 
-- [ ] T013 [P] [US2] Обновить обработчик `moex-lqdt` в `src/cli/main.py`: обязательный `--days`, расчёт периода, вывод дат.
-- [ ] T014 [P] [US2] Принять период в `src/services/moex_client.py`, передавать границы в запросы и включать в метаданные/имя XLSX.
-- [ ] T015 [US2] Расширить интеграционный сценарий MOEX с `--days` в `tests/integration/test_end_to_end.py` (проверка периода, имени XLSX и листа `candles`).
+- [X] T013 [P] [US2] Обновить обработчик `moex-lqdt` в `src/cli/main.py`: обязательный `--days`, расчёт периода, вывод дат.
+- [X] T014 [P] [US2] Принять период в `src/services/moex_client.py`, передавать границы в запросы и включать в метаданные/имя XLSX.
+- [X] T015 [US2] Расширить интеграционный сценарий MOEX с `--days` в `tests/integration/test_end_to_end.py` (проверка периода, имени XLSX и листа `candles`).
 
 **Checkpoint**: User Stories 1 и 2 работают и тестируются независимо.
 
@@ -89,13 +89,13 @@
 
 ### Tests for User Story 3
 
-- [ ] T016 [P] [US3] Добавить негативные проверки диапазона/типа `days` в `tests/unit/test_validators.py`.
-- [ ] T017 [P] [US3] Добавить юнит-тесты CLI ошибок (`--days 0`, отсутствует, нецелое) в `tests/unit/test_cli_main.py` (код 5, без вызовов сервисов).
+- [X] T016 [P] [US3] Добавить негативные проверки диапазона/типа `days` в `tests/unit/test_validators.py`.
+- [X] T017 [P] [US3] Добавить юнит-тесты CLI ошибок (`--days 0`, отсутствует, нецелое) в `tests/unit/test_cli_main.py` (код 5, без вызовов сервисов).
 
 ### Implementation for User Story 3
 
-- [ ] T018 [P] [US3] Реализовать обработку ошибок ввода/выход код 5 в `src/cli/main.py` (русские сообщения, без сетевых вызовов).
-- [ ] T019 [US3] Добавить интеграционные сценарии ошибочного ввода в `tests/integration/test_end_to_end.py` (нет файлов, код 5).
+- [X] T018 [P] [US3] Реализовать обработку ошибок ввода/выход код 5 в `src/cli/main.py` (русские сообщения, без сетевых вызовов).
+- [X] T019 [US3] Добавить интеграционные сценарии ошибочного ввода в `tests/integration/test_end_to_end.py` (нет файлов, код 5).
 
 **Checkpoint**: Все ошибки ввода корректно обрабатываются и тестируются независимо.
 
