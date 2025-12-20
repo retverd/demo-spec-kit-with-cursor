@@ -1,7 +1,6 @@
 """Клиент API ЦБ РФ для извлечения курса валют."""
 
 import logging
-import sys
 from datetime import date, timedelta
 from typing import List
 from xml.etree import ElementTree as ET
@@ -55,7 +54,7 @@ class CBRClient:
             # Собрать URL с параметрами дат
             url = self._build_url(start_date, end_date)
             logger.info(
-                f"Requesting exchange rates from CBR API: {start_date} to {end_date}"
+                "Запрос курсов RUB/USD из API ЦБ РФ: %s - %s", start_date, end_date
             )
 
             # Выполнить запрос с таймаутом (соответствует SC-002)
@@ -66,49 +65,46 @@ class CBRClient:
             try:
                 content = response.content.decode("windows-1251")
             except UnicodeDecodeError as e:
-                logger.error(f"Failed to decode response from windows-1251: {e}")
+                logger.error("Не удалось декодировать ответ windows-1251: %s", e)
                 raise CBRClientError(
-                    "Invalid response encoding from CBR API. Expected windows-1251."
+                    "Некорректная кодировка ответа API ЦБ РФ (ожидается windows-1251)."
                 ) from e
 
             # Распарсить XML и извлечь записи
             records = self._parse_xml_response(content, start_date, end_date)
 
             logger.info(
-                f"Successfully retrieved {len([r for r in records if r.exchange_rate_value is not None])} exchange rates"
+                "Успешно получено %s значений курса (без учёта пропусков)",
+                len([r for r in records if r.exchange_rate_value is not None]),
             )
             return records
 
         except requests.Timeout as e:
-            error_msg = "Network timeout while connecting to CBR API. Please check your network connection."
+            error_msg = "Таймаут при обращении к API ЦБ РФ."
             logger.error(error_msg)
-            print(error_msg, file=sys.stderr)
             raise CBRClientError(error_msg) from e
 
         except requests.ConnectionError as e:
-            error_msg = (
-                "Unable to connect to CBR API. Please check your network connection."
-            )
+            error_msg = "Сетевая ошибка при обращении к API ЦБ РФ."
             logger.error(error_msg)
-            print(error_msg, file=sys.stderr)
             raise CBRClientError(error_msg) from e
 
         except requests.HTTPError as e:
-            error_msg = f"CBR API returned error: {e.response.status_code if hasattr(e, 'response') else 'Unknown'}"
+            status = (
+                e.response.status_code if getattr(e, "response", None) else "unknown"
+            )
+            error_msg = f"API ЦБ РФ вернуло ошибку HTTP {status}"
             logger.error(error_msg)
-            print(error_msg, file=sys.stderr)
             raise CBRClientError(error_msg) from e
 
         except ET.ParseError as e:
-            error_msg = "Invalid or malformed XML response from CBR API."
-            logger.error(f"{error_msg}: {e}")
-            print(error_msg, file=sys.stderr)
+            error_msg = "Некорректный XML в ответе API ЦБ РФ."
+            logger.error("%s: %s", error_msg, e)
             raise CBRClientError(error_msg) from e
 
         except (ValueError, KeyError, AttributeError) as e:
-            error_msg = "Invalid or malformed data received from CBR API."
-            logger.error(f"{error_msg}: {e}")
-            print(error_msg, file=sys.stderr)
+            error_msg = "Некорректные данные в ответе API ЦБ РФ."
+            logger.error("%s: %s", error_msg, e)
             raise CBRClientError(error_msg) from e
 
     def _build_url(self, start_date: date, end_date: date) -> str:
@@ -162,16 +158,16 @@ class CBRClient:
             try:
                 day, month, year = date_str.split(".")
                 record_date = date(int(year), int(month), int(day))
-            except (ValueError, TypeError) as e:
+            except (ValueError, TypeError):
                 logger.warning(
-                    f"Invalid date format in API response: {date_str}, skipping"
+                    "Некорректный формат даты в ответе API: %s (пропуск)", date_str
                 )
                 continue
 
             # Извлечь значение курса
             value_elem = record_elem.find("Value")
             if value_elem is None or value_elem.text is None:
-                logger.warning(f"No Value element for date {record_date}, skipping")
+                logger.warning("Нет значения курса для даты %s (пропуск)", record_date)
                 continue
 
             # Заменить запятую на точку и преобразовать в float
@@ -179,9 +175,11 @@ class CBRClient:
                 value_str = value_elem.text.replace(",", ".")
                 rate = float(value_str)
                 api_records[record_date] = rate
-            except (ValueError, TypeError) as e:
+            except (ValueError, TypeError):
                 logger.warning(
-                    f"Invalid rate value for date {record_date}: {value_elem.text}, skipping"
+                    "Некорректное значение курса для даты %s: %s (пропуск)",
+                    record_date,
+                    value_elem.text,
                 )
                 continue
 

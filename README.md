@@ -2,8 +2,8 @@
 
 CLI-инструмент поддерживает два сценария:
 
-- Курсы RUB/USD за 7 дней из API ЦБ РФ → Parquet.
-- Дневные свечи LQDT/TQTF за 7 дней из ISS‑API Мосбиржи → XLSX с именованием `lqdt_tqtf_{period_start}_to_{period_end}_{report_date}_{HHMMSS}.xlsx`.
+- Курсы RUB/USD за указанный период `--days` из API ЦБ РФ → Parquet.
+- Дневные свечи LQDT/TQTF за указанный период `--days` из ISS‑API Мосбиржи → XLSX с именованием `lqdt_tqtf_{period_start}_to_{period_end}_{report_date}_{HHMMSS}.xlsx`.
 
 ## Установка
 
@@ -16,15 +16,18 @@ pip install -r requirements.txt
 
 ## Быстрый старт
 
-- Курсы ЦБ (по умолчанию): `python -m src.cli.main`
-- Явный вызов ЦБ: `python -m src.cli.main cbr`
-- Свечи LQDT/TQTF → XLSX: `python -m src.cli.main moex-lqdt`
+> [!TIP]
+> В Windows удобно использовать `py` вместо `python`, если `python` не добавлен в PATH.
+
+- Курсы ЦБ (по умолчанию): `python -m src.cli.main --days 7`
+- Явный вызов ЦБ: `python -m src.cli.main cbr --days 7`
+- Свечи LQDT/TQTF → XLSX: `python -m src.cli.main moex-lqdt --days 7`
 
 Ожидается:
 
 - Код выхода `0` при успехе.
 - Файл Parquet `rub_usd_{period_start}_to_{period_end}_{report_date}_{HHMMSS}.parquet` (сценарий CBR).
-- Файл XLSX `lqdt_tqtf_{period_start}_to_{period_end}_{report_date}_{HHMMSS}.xlsx` с листом `candles` и колонками `Date, Open, High, Low, Close, Volume` (7 строк по датам) для сценария MOEX.
+- Файл XLSX `lqdt_tqtf_{period_start}_to_{period_end}_{report_date}_{HHMMSS}.xlsx` с листом `candles` и колонками `Date, Open, High, Low, Close, Volume` (ровно `--days` строк по датам) для сценария MOEX.
 
 ## Коды выхода (общие для CLI)
 
@@ -65,6 +68,21 @@ tests/
 ```bash
 pytest
 ```
+
+### Реальные прогоны против API (опционально)
+
+По умолчанию тесты против реальных CBR/MOEX пропускаются, чтобы набор был стабильным без сети.
+Чтобы включить:
+
+```bash
+# PowerShell
+$env:RUN_REAL_API="1"; python -m pytest -q tests/integration/test_real_api_runs.py
+```
+
+Также доступен перф‑смоук для `moex-lqdt` (по умолчанию порог 20 сек), параметры:
+
+- `MOEX_PERF_MAX_SECONDS` — порог времени (сек)
+- `MOEX_PERF_DAYS` — сколько дней запрашивать (по умолчанию 7)
 
 ## Обработка ошибок
 

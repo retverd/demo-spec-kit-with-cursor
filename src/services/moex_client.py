@@ -1,7 +1,6 @@
 """Клиент ISS‑API Мосбиржи для дневных свечей LQDT/TQTF."""
 
 import logging
-import sys
 from datetime import date, datetime, timedelta
 from typing import Dict, List, Optional
 
@@ -52,12 +51,10 @@ class MoexClient:
         except requests.Timeout as e:
             msg = "Таймаут при обращении к API Мосбиржи."
             logger.error(msg)
-            print(msg, file=sys.stderr)
             raise MoexClientError(msg) from e
         except requests.ConnectionError as e:
             msg = "Сетевая ошибка при обращении к API Мосбиржи."
             logger.error(msg)
-            print(msg, file=sys.stderr)
             raise MoexClientError(msg) from e
         except requests.HTTPError as e:
             status = (
@@ -65,17 +62,14 @@ class MoexClient:
             )
             msg = f"API Мосбиржи вернуло ошибку HTTP {status}"
             logger.error(msg)
-            print(msg, file=sys.stderr)
             raise MoexClientError(msg) from e
         except ValueError as e:
             msg = "Некорректный JSON от API Мосбиржи."
             logger.error(msg)
-            print(msg, file=sys.stderr)
             raise MoexClientError(msg) from e
         except KeyError as e:
             msg = f"Ответ API Мосбиржи не содержит ожидаемых данных: отсутствует {e}"
             logger.error(msg)
-            print(msg, file=sys.stderr)
             raise MoexClientError(msg) from e
         except MoexClientError:
             # Already logged; just re-raise
@@ -83,7 +77,6 @@ class MoexClient:
         except Exception as e:
             msg = f"Неожиданная ошибка при обращении к API Мосбиржи: {e}"
             logger.error(msg, exc_info=True)
-            print(msg, file=sys.stderr)
             raise MoexClientError(msg) from e
 
     def _parse_payload(

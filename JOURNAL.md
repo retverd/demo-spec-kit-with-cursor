@@ -7,7 +7,7 @@
 - ☑ Модернизация конституции проекта с учетом недостатков выявленных при создании первого изменения
 - ☑ Создание изолированной второго изменения в проекте через исполнение всех шагов последовательно
 - ☑ Модернизация конституции проекта с учетом недостатков выявленных при создании второго изменения
-- ☐ Модернизация первой и второй изменений одновременно
+- ☑ Модернизация первого и второго изменений одновременно
 - ☐ Подведение итогов
 
 Версия:
@@ -26,11 +26,11 @@
 
 #### Commit [1cdb5c1731258ac35e053f4f1257d3dee7effbec](https://github.com/retverd/demo-spec-kit-with-cursor/commit/1cdb5c1731258ac35e053f4f1257d3dee7effbec)
 
-Создал конституцию проекта через `specify constitution`, в отличие от последующих команд промпт не был сохранен. Конституция была сохранена на русском языке, однако в ней не было создано требования о том, что все документы и комментарии должны быть написаны на русском языке.
+[Model **GPT-5.1 Codex Max**] Создал конституцию проекта через `specify constitution`, в отличие от последующих команд промпт не был сохранен. Конституция была сохранена на русском языке, однако в ней не было создано требования о том, что все документы и комментарии должны быть написаны на русском языке.
 
 #### Commit [0d57dad06a299ba3888f1af38078976d4e0435e3](https://github.com/retverd/demo-spec-kit-with-cursor/commit/0d57dad06a299ba3888f1af38078976d4e0435e3)
 
-К сожалению, на данном этапе не догадался сохранять результат работы каждой команды в отдельном коммите (как и вести журнал), так что все изменения были сделаны в одном коммите.
+[Model **GPT-5.1 Codex Max**] К сожалению, на данном этапе не догадался сохранять результат работы каждой команды в отдельном коммите (как и вести журнал), так что все изменения были сделаны в одном коммите.
 
 По итогу README.md был обновлен согласно созданному функционалу, был создан полный пакет документов, работающий код и тесты - модульные и интеграционные. Поскольку в конституцию проекта не попало требование вести все документы и комментарии на русском языке, всё на английском.
 
@@ -58,7 +58,7 @@
 
 #### Commit [31e05c80286a529b6d9324ae001caf51e1ea3cd4](https://github.com/retverd/demo-spec-kit-with-cursor/commit/31e05c80286a529b6d9324ae001caf51e1ea3cd4)
 
-Обновил [конституцию проекта](.specify/memory/constitution.md) командой `/speckit.constitution`, указал, что для удобства работы команды все спецификации проекта и все комментарии в коде должны быть на русском языке.
+[Model **GPT-5.1 Codex Max**] Обновил [конституцию проекта](.specify/memory/constitution.md) командой `/speckit.constitution`, указал, что для удобства работы команды все спецификации проекта и все комментарии в коде должны быть на русском языке.
 
 Были внесены следующие изменения:
 
@@ -74,7 +74,7 @@
 
 #### Commit [6137bce6fed314c9175397823aaeabf1cd0e3dd3](https://github.com/retverd/demo-spec-kit-with-cursor/commit/6137bce6fed314c9175397823aaeabf1cd0e3dd3)
 
-Сгенерирована [спецификация](specs/002-moscow-exchange-candles/spec.md) для второго изменения командой `/speckit.specify`. При генерации был предложен временной интервал в последние 30 дней, я попросил взять 7 последних дней по аналогии с существующим функционалом, модель об этом не догадалась. Изменение разбито на два пользовательских сценария, которые на самом деле являются частью одного. Сформирован реестр граничных условий и негативных сценариев, на часть прописана реакция по аналогии с существующим функионалом. Сформированы функциональные требования, описаны ключевые сущности, предположения и приемочные критерии.
+[Model **GPT-5.1 Codex Max**] Сгенерирована [спецификация](specs/002-moscow-exchange-candles/spec.md) для второго изменения командой `/speckit.specify`. При генерации был предложен временной интервал в последние 30 дней, я попросил взять 7 последних дней по аналогии с существующим функционалом, модель об этом не догадалась. Изменение разбито на два пользовательских сценария, которые на самом деле являются частью одного. Сформирован реестр граничных условий и негативных сценариев, на часть прописана реакция по аналогии с существующим функионалом. Сформированы функциональные требования, описаны ключевые сущности, предположения и приемочные критерии.
 
 > [!WARNING]
 > Несмотря на явное указание в конституции проекта, а также в [шаблоне спецификации](.specify\templates\spec-template.md), значительная часть текста сгенерирована по-прежнему на английском
@@ -86,7 +86,7 @@
 
 #### Commit [79847e6e54f87347f7346ff902e81bfd9e89a760](https://github.com/retverd/demo-spec-kit-with-cursor/commit/79847e6e54f87347f7346ff902e81bfd9e89a760)
 
-На основе спецификации сформирован [план реализации](specs/002-moscow-exchange-candles/plan.md) функционала командой `/speckit.plan`. Включает в себя:
+[Model **GPT-5.1 Codex Max**] На основе спецификации сформирован [план реализации](specs/002-moscow-exchange-candles/plan.md) функционала командой `/speckit.plan`. Включает в себя:
 
 - метаданные: когда создан, ссылка на спецификацию;
 - технический контекст: версию Python и список библиотек;
@@ -101,7 +101,7 @@
 
 #### Commit [8ae6ec70432b3745f8db4954ead8530fe0836c52](https://github.com/retverd/demo-spec-kit-with-cursor/commit/8ae6ec70432b3745f8db4954ead8530fe0836c52)
 
-На основе плана сформирован список [задач для выполнения](specs/002-moscow-exchange-candles/tasks.md) и тестов, всё на русском. Используются фазы с предыдущего шага, часть задач маркирована как пригодных к одновременному выполнению для ускорения процесса.
+[Model **GPT-5.1 Codex Max**] На основе плана сформирован список [задач для выполнения](specs/002-moscow-exchange-candles/tasks.md) и тестов, всё на русском. Используются фазы с предыдущего шага, часть задач маркирована как пригодных к одновременному выполнению для ускорения процесса.
 
 > [!NOTE]
 > Не знаю, как проверить одновременность выполнения задач, агент выполняет всё в одном окне как будто бы последовательно. Список задач не содержит даты создания.
@@ -110,7 +110,7 @@
 
 #### Commit [8cbe43472297f719fa50f2beaf7ab6dcf41631a3](https://github.com/retverd/demo-spec-kit-with-cursor/commit/8cbe43472297f719fa50f2beaf7ab6dcf41631a3)
 
-Командой `/speckit.analyze` проведен анализ подготовленных документов, по возникшим вопросам внесены следующие изменения:
+[Model **GPT-5.1 Codex Max**] Командой `/speckit.analyze` проведен анализ подготовленных документов, по возникшим вопросам внесены следующие изменения:
 
 - убраны метаданные для XLSX-файла, решил ограничиться записью в имя файла интервала времени и даты формирования отчета;
 - указаны детали обработки оставшихся негативных сценариев;
@@ -119,7 +119,7 @@
 
 #### Commit [5f60c112aff2ff0f72d6c6d18f5108bf218bd401](https://github.com/retverd/demo-spec-kit-with-cursor/commit/5f60c112aff2ff0f72d6c6d18f5108bf218bd401)
 
-Командой `/speckit.implement` проведено [исследование](specs/002-moscow-exchange-candles/research.md) API перед реализацией. Документация дополнена описаниями [контрактов](specs/002-moscow-exchange-candles/contracts/) и [модели данных](specs/002-moscow-exchange-candles/data-model.md). Подготовлено [краткое описание](specs/002-moscow-exchange-candles/quickstart.md) использования изменения.
+[Model **GPT-5.1 Codex Max**] Командой `/speckit.implement` проведено [исследование](specs/002-moscow-exchange-candles/research.md) API перед реализацией. Документация дополнена описаниями [контрактов](specs/002-moscow-exchange-candles/contracts/) и [модели данных](specs/002-moscow-exchange-candles/data-model.md). Подготовлено [краткое описание](specs/002-moscow-exchange-candles/quickstart.md) использования изменения.
 
 Реализовано изменение по спецификации:
 
@@ -148,7 +148,7 @@
 
 #### Commit [220520b664bcc33e03d4e1c01fb93a92d7b025d0](https://github.com/retverd/demo-spec-kit-with-cursor/commit/220520b664bcc33e03d4e1c01fb93a92d7b025d0)
 
-Вручную добавил пустые строки после заголовков и вокруг список. Запросил проверку качества имплементации кода согласно [конституции проекта](.specify/memory/constitution.md). По итогам проверки были:
+[Model **GPT-5.1 Codex Max**] Вручную добавил пустые строки после заголовков и вокруг список. Запросил проверку качества имплементации кода согласно [конституции проекта](.specify/memory/constitution.md). По итогам проверки были:
 
 - переведены новые докстринги на русский: src/services/moex_client.py, src/models/candles.py, src/services/xlsx_writer.py;
 - ужесточена проверка boardid в MoexClient: теперь колонка обязательна, валидируется, и нет молчаливой подстановки;
@@ -160,7 +160,7 @@
 
 #### Commit [ca8f5993b7612dfd388cea8eebcd79262950e6ea](https://github.com/retverd/demo-spec-kit-with-cursor/commit/ca8f5993b7612dfd388cea8eebcd79262950e6ea)
 
-Запросил локализовать оставшиеся английские докстринги/комментарии во всех файлах папок src и tests, в итоге:
+[Model **GPT-5.1 Codex Max**] Запросил локализовать оставшиеся английские докстринги/комментарии во всех файлах папок src и tests, в итоге:
 
 - Переведены комментарии и строки документации на русский язык в `main.py`, `candles.py`, `exchange_rate.py`, `cbr_client.py`, `moex_client.py`, `parquet_writer.py`, `xlsx_writer.py`, `date_utils.py`, и `validators.py`.
 - Обновлены сообщения логирования и ошибки для лучшего понимания пользователями.
@@ -174,7 +174,7 @@
 
 #### Commit [6e1a5c378629ddff6226274b41bdc7c63d5fe995](https://github.com/retverd/demo-spec-kit-with-cursor/commit/6e1a5c378629ddff6226274b41bdc7c63d5fe995)
 
-Починил сбор данных с МосБиржи: "При ошибках MoexClient не выдает сообщения в консоль, а молча заканчивает работу, что не позволяет идентифицировать проблему.":
+[Model **GPT-5.1 Codex Max**] Починил сбор данных с МосБиржи: "При ошибках MoexClient не выдает сообщения в консоль, а молча заканчивает работу, что не позволяет идентифицировать проблему.":
 
 - В src/cli/main.py при ошибках MoexClient теперь печатается сообщение в stderr перед возвратом кода выхода.
 - Добавлен безопасный разбор аргументов: при вызове из тестов или без явных аргументов игнорируются pytest-пути, а при реальном вызове из CLI используется переданный argv (или sys.argv[1:]).
@@ -212,10 +212,10 @@
 
 Явно нужно пройтись линтером по всем файлам и исправить ошибки.
 
-> [!TIP]
+> [!INFO]
 > Генератор commit messages продолжает писать на русском, чудеса.
 
-### 2025-12-09
+### 2025-12-10
 
 #### Commit [f2c9cdb083be8db860424f33fa95a955363148cf](https://github.com/retverd/demo-spec-kit-with-cursor/commit/f2c9cdb083be8db860424f33fa95a955363148cf)
 
@@ -223,7 +223,7 @@
 
 #### Commit [777fc81dbc6dc83411597888f6593d1c1774863b](https://github.com/retverd/demo-spec-kit-with-cursor/commit/777fc81dbc6dc83411597888f6593d1c1774863b)
 
-Выполни Фазу 6 [tasks.md](specs/002-moscow-exchange-candles/tasks.md):
+[Model **GPT-5.1 Codex Max**] Выполни Фазу 6 [tasks.md](specs/002-moscow-exchange-candles/tasks.md):
 
 > Oбновил документацию, усилил русскоязычные ошибки/валидацию и добавил перф‑тест для moex-lqdt.
 >
@@ -244,15 +244,13 @@
 > - Тест производительности выполнен на заглушках, что не имеет смысла.
 > - Неконсистентность названий: то MOEX, то Мосбиржа. То CBR, то ЦБ РФ.
 
-#### Commit [TBD](https://github.com/retverd/demo-spec-kit-with-cursor/commit/)
+#### Commit [3053de4b90a549c85f84e2bcdc06d3d6efaa69de](https://github.com/retverd/demo-spec-kit-with-cursor/commit/3053de4b90a549c85f84e2bcdc06d3d6efaa69de)
 
-/speckit.constitution расширь принципы тестирования следующим образом:
+[Model **GPT-5.1 Codex Max**] /speckit.constitution расширь принципы тестирования следующим образом:
 
 - хотя бы часть интеграционных тестов должна быть на взаимодействие с реальной системой, особенно тесты на производительность;
 - должна быть возможность тестировать разные компоненты независимо друг от друга, если их функционал не пересекается.
 
-> Итог:
->
 > - Обновил принцип тестирования: обязательная часть интеграционных тестов теперь должна идти против реальных систем (особенно для перфоманс-проверок), а независимые компоненты требуют самостоятельных тестовых наборов без скрытых связей. 75:77:.specify/memory/constitution.md
 > - Версию конституции поднял до 1.2.0 с датой 2025-12-10; добавлен Sync Impact Report. 14:18:.specify/memory/constitution.md
 > - Синхронизировал шаблоны: в планах добавлены ворота про реальные интеграционные тесты и независимость компонентов, в спецификациях — напоминание про реальные интеграционные/перф-сценарии, в задачах — требование включать такие прогоны при необходимости. 32:38:.specify/templates/plan-template.md 8:12:.specify/templates/spec-template.md 13:15:.specify/templates/tasks-template.md
@@ -261,13 +259,200 @@
 
 > [!CAUTION]
 > Странный вывод - внесенное правило требует перестроения всех тестов, которое не было сделано.
+> Два последних запроса запускал дважды для проверки, модель GPT-5.1 Codex Max, результаты разные. В первом варианте были более детальные правки и более лаконичное описание.
 
 <!-- -->
 
 > [!WARNING]
 > После обновления шаблонов [plan-template.md](.specify\templates\plan-template.md), [spec-template.md](.specify\templates\spec-template.md) и [tasks-template.md](.specify\templates\tasks-template.md) они содержат инструкции как раз русском, так и на английском языке.
 
+#### Commit [caa4fe3b4cd6165570f7a91ef3e7b3afb7d2e014](https://github.com/retverd/demo-spec-kit-with-cursor/commit/caa4fe3b4cd6165570f7a91ef3e7b3afb7d2e014)
+
+[Model **GPT-5.1 Codex Max**] Приступим к исправлению проблем проектирования функционала в первых двух изменениях:
+
+/speckit.specify Для команд cbr и moex-lqdt в [main.py](src/cli/main.py) сделай обязательную передачу длительности интервала времени в днях. Окончание периода - также сегодняшний день.
+
+> - Создана ветка 001-require-interval-days и сгенерирован спек specs/001-require-interval-days/spec.md с пользовательскими историями, крайними случаями, функциональными требованиями и измеримыми критериями успеха (обязательный параметр дней, конец периода — сегодня).
+> - Чеклист качества заполнен и пройден: specs/001-require-interval-days/checklists/requirements.md (без NEEDS CLARIFICATION).
+> - Готово к следующему шагу: можно запускать /speckit.plan или уточнения не требуются.
+
 <!-- -->
 
-> [!TIP]
-> Два последних запроса запускал дважды для проверки, модель GPT-5.1 Codex Max, результаты разные. В первом варианте были более детальные правки и более лаконичное описание.
+> [!WARNING]
+> Некорректный префикс для ветки: первое изменение уже было, непонятно, откуда опять 001...
+
+Подготовлена [спецификация](specs/001-require-interval-days/spec.md), целиком на русском языке. Для разных команд почему-то разный приоритет, хотя явного разделения не было сделано, они по замыслу равнозначны. Возможно дело в том, что курсы валют с ЦБ РФ являются сценарием по умолчанию.
+Почему-то сделано предположение, что максимальное количество извлекаемых дней - 30, надо будет уточнить верхний предел на дальшейших шагах.
+
+> [!WARNING]
+> В тестах для MOEX неверное предположение о наборе колонок, возвращаемых для свечей, надо будет дать ему сравнение с реальным ответом API для корректирровки.
+
+### 2025-12-11
+
+#### Commit [74bd77c05fa9177f9103a3e83df64e7c7630e33a](https://github.com/retverd/demo-spec-kit-with-cursor/commit/74bd77c05fa9177f9103a3e83df64e7c7630e33a)
+
+[Model **GPT-5.1 Codex Max**] Проверяю корректность требований командой /speckit.clarify:
+
+> Asking max days range:
+>
+> - A Enforce 1–30 days (inclusive)
+> - B Enforce 1–60 days (inclusive)
+> - C Enforce 1–365 days (inclusive)
+> - D Minimum 1, no explicit max (warn on large)
+> - Short Provide a different short answer (<=5 words)
+>
+> C
+>
+> Принял Option C: диапазон days — 1–365. Спецификация обновлена [spec.md](specs/001-require-interval-days/spec.md) для верхней границы, FR-003 и SC-001/002/004. Weitere Wünsche?
+
+<!-- -->
+
+> [!WARNING]
+> Почему-то уточнение на немецком!
+
+#### Commit [eda212c3ee67f58e7f2eb47fc3cb907aac7e5aad](https://github.com/retverd/demo-spec-kit-with-cursor/commit/eda212c3ee67f58e7f2eb47fc3cb907aac7e5aad)
+
+[Model **GPT-5.1 Codex Max**] Составляем план работ с /specit.plan
+
+> План и артефакты готовы.
+>
+> - План обновлён с конкретным контекстом и gate-статусами: [plan.md](specs/001-require-interval-days/plan.md).
+> - Проведено исследование и зафиксированы решения (диапазон 1–365, предвалидация, расчёт периода, коды выхода): [research.md](specs/001-require-interval-days/research.md).
+> - Описана модель данных для days/периода и артефактов: [data-model.md](specs/001-require-interval-days/data-model.md).
+> - Контракт CLI с обязательным --days и поведением для обеих подкоманд: [cli-contract.md](specs/001-require-interval-days/contracts/cli-contract.md).
+> - Quickstart с примерами запуска и кодами выхода: [quickstart.md](specs/001-require-interval-days/quickstart.md).
+> - Агентный контекст обновлён через [update-agent-context.ps1](.specify/scripts/powershell/update-agent-context.ps1) -AgentType cursor-agent.
+>
+> Состояние: все NEEDS CLARIFICATION закрыты, Constitution Check после дизайна — PASS.
+
+<!-- -->
+
+> [!WARNING]
+> В [plan.md](specs/001-require-interval-days/plan.md) зачем-то добавлено условие времени проведения валидации: "Валидация `--days` и расчёт периода ≤50 мс", убрал.
+> Несмотря на явные требования к русскому языку, документы частично формируются на английском.
+
+<!-- -->
+
+> [!INFO]
+> В [plan.md](specs/001-require-interval-days/plan.md) учтены новые требования по тестированию (интеграционные тесты с реальными системами и автономное тестирование независимых компонент), однако в более ранние планы и спецификации изменения не внесены.
+
+#### Commit [8ec14c5d9261c82081bb41b81a05b3019ca6ef1b](https://github.com/retverd/demo-spec-kit-with-cursor/commit/8ec14c5d9261c82081bb41b81a05b3019ca6ef1b)
+
+[Model **GPT-5.1 Codex Max**] Составляем список задач с /specit.tasks:
+
+> Created [tasks.md](specs/001-require-interval-days/tasks.md) with dependency-ordered, story-grouped checklist tasks.
+>
+> - Total tasks: 21
+> - By story: US1=5, US2=4, US3=4 (Setup=2, Foundational=4, Polish=2)
+> - Parallel opportunities: highlighted per phase (e.g., Foundational T004/T006; US1 T007/T008/T009/T010; US2 T012/T013/T014; US3 T016/T017, then T018/T019).
+> - Independent test criteria: included under each story (US1 cbr success with --days; US2 moex-lqdt success with --days; US3 invalid/absent --days returns code 5, no files).
+> - MVP scope: User Story 1 (CBR with required --days).
+> - Format check: all tasks follow - [ ] T### [P?] [US?] Description with file path.
+
+<!-- -->
+
+> [!WARNING]
+>
+> - Все задачи описаны корректно, хоть и достаточно многословно.
+> - Есть реализация требования тестирования пользовательских историй независимо друг от друга, однако нет реализации требования проведения интеграционных тестов с реальной системой.
+
+#### Commit [a2ca2ad66596614369c9316aa5b3c39385d32ea1](https://github.com/retverd/demo-spec-kit-with-cursor/commit/a2ca2ad66596614369c9316aa5b3c39385d32ea1)
+
+[Model **GPT-5.1 Codex Max**] Проведен анализ всех артефактов, покрытия требований и соответствия документов, внесены исправления, в целом закрывающие все возникшие ранее вопросы.
+
+> Specification Analysis Report
+>
+> - **C1 Constitution CRITICAL Нет явных задач на интеграционные/перф проверки против реальных CBR/MOEX, что нарушает требование Принципа 3 и напоминание спеки о реальных интеграциях**.
+> - Добавить отдельные задачи на прогон CLI против реальных API CBR/MOEX (в т.ч. перф/пропускная способность) и фиксировать результаты.
+> - **G1 Coverage Gap HIGH Требование «сохранить текущие бизнес-потоки без регрессий» не покрыто задачами: нет отдельной проверки, что прежние форматы/функции не затронуты.**
+> - Добавить задачу на регрессионный прогон существующих сценариев/данных для обеих команд (unit/integration) после внедрения --days.
+> - **G2 Coverage Gap MEDIUM Граничные кейсы 365 дней/високосный год указаны в спека/SC-004, но нет явных тестовых задач на эти границы.**
+> - Расширить тестовые задачи (unit+integration) на --days 365 и дату смены месяца/високосный день.
+> - **U1 Unmapped Task LOW T001 (фиксация зависимостей) не связан с конкретным требованием; может быть инфраструктурой, но цель не отражена в спека/плане.**
+> - Уточнить, нужен ли отдельный трек зависимости: либо связать с требованиями воспроизводимости, либо переместить в общий backlog.
+>
+> -------------------------
+>
+> - Обновил [tasks.md](specs/001-require-interval-days/tasks.md):
+>   - Добавил T025 для юнит-тестов граничных случаев (--days 365, смена месяца/високосный день) в [test_date_utils.py](tests/unit/test_date_utils.py) и [test_cli_main.py](tests/unit/test_cli_main.py);
+>   - Добавил Phase 6 для требований конституции по реальным интеграциям и регрессии: T022 (реальный прогон CBR), T023 (реальный прогон MOEX), T024 (регрессионная проверка существующих форматов/кодовых путей после обязательного --days);
+> - В [plan.md](specs/001-require-interval-days/plan.md) добавил примечание в Testing о Phase 6 (реальные прогоны CBR/MOEX T022/T023, регрессия форматов T024, граничные кейсы T025) и отметку в Constitution Check про Phase 6;
+> - В [spec.md](specs/001-require-interval-days/spec.md) в Edge Cases указал покрытие граничных расчётов T025 и реальные прогоны/регрессию через T022–T024;
+> - Success criteria обновлены в [spec.md](specs/001-require-interval-days/spec.md):
+>   - SC-004 расширен на смену месяца/високосный год;
+>   - Добавлены SC-005 (реальные прогоны CBR/MOEX с фиксацией времени отклика/пропускной способности) и SC-006 (регрессия форматов/имен файлов после обязательного --days).
+
+#### Commit [9f8e7d06a7d6c07bc8911e746f2d2339ce2e3228](https://github.com/retverd/demo-spec-kit-with-cursor/commit/9f8e7d06a7d6c07bc8911e746f2d2339ce2e3228)
+
+[Model **GPT-5.1 Codex Max**] Реализуем изменения с /speckit.implement:
+
+> Key changes:
+>
+> - Made --days mandatory with unified validation/exit helper, shared logging of period bounds, and ensured both cbr and moex-lqdt run with the calculated start/end dates before any network calls;
+> - Added reusable period utilities (calculate_period, get_period_dates) and flexible record validation including CLI-specific validate_days for the 1–365 bound;
+> - Expanded unit coverage for date utilities, validators, and CLI (positive, boundary, and error paths; includes 365-day and leap-day cases);
+> - Strengthened integration tests to verify --days affects period metadata and filenames for both CBR and MOEX flows, plus validation failure when days are missing;
+> - Updated task tracking per work completed (T001–T019 marked done in [tasks.md](specs/001-require-interval-days/tasks.md)).
+>
+> Tests:
+>
+> - pytest / python -m pytest (root): failed to run because neither pytest nor python executable is available in the current shell environment. Please run tests locally once Python/pytest are accessible.
+>
+> Open items / next steps:
+>
+> - Pending tasks in tasks.md: T020 (quickstart sync), T021 (CLI help refresh), and Phase 6 real API/regression runs (T022–T024);
+> - After enabling Python/pytest locally, rerun the full suite to verify the new --days flow end-to-end.
+
+<!-- -->
+
+> [!WARNING]
+>
+> - В [main.py](src/cli/main.py) создал функцию для единого вывода ошибок валидации с кодом EXIT_VALIDATION_ERROR, а в коде оставил множество вызовов, практически или полностью дублирующих её код.
+> - Классификатор ошибок MOEX вынесен в отдельную функцию _classify_moex_error, идентичный классификатор ошибок CBR остался вшит в коде;
+> - Зачем-то пределал функцию get_last_7_days в обертку над get_period_dates и оставил тест для нее, хотя она больше нигде не используется;
+> - По итогам разработки ИИ не смог запустить тесты не были запущены, результат: 13 failed, 58 passed in 3.29s, удалось исправить, отправив в чат вывод в консоль;
+> - Есть неиспользуемые импорты.
+
+#### Commit [TBD](https://github.com/retverd/demo-spec-kit-with-cursor/commit/)
+
+[Model **GPT-5.2**] complete pending tasks:
+
+> Что сделано (все “pending tasks” закрыты)
+>
+> - Синхронизировал документацию с обязательным --days;
+>   - Обновлены: [README.md](README.md), [001 quickstart.md](specs/001-require-interval-days/quickstart.md), [002 quickstart.md](specs/002-moscow-exchange-candles/quickstart.md), [cli-contract.md](specs/002-moscow-exchange-candles/contracts/cli-contract.md).
+> - Привёл CLI/help и вывод ошибок к единому поведению
+>   - src/cli/main.py: нормальная справка --help (включая подкоманды), единые хелперы ошибок, вывод в stderr.
+>   - Починил “кракозябры” в help/сообщениях: добавлена настройка UTF‑8 для stdout/stderr.
+> - Реальные интеграции + регрессия + перф (опционально)
+>   - Добавлено: tests/integration/test_real_api_runs.py — реальные прогоны CBR/MOEX + перф‑смоук MOEX, по умолчанию skipped, включаются через переменные окружения.
+> - Обновил чеклисты задач
+>   - Отмечены выполненными: specs/001-require-interval-days/tasks.md (T020–T024) и specs/002-moscow-exchange-candles/tasks.md (T031–T037).
+>
+> Проверки
+>
+> - Полный прогон тестов из корня репо: `71 passed, 7 skipped`.
+>
+> Как запустить реальные прогоны API (если нужно)
+>
+> PowerShell:
+>
+> ```powershell
+> $env:RUN_REAL_API="1"; py -m pytest -q tests/integration/test_real_api_runs.py
+> ```
+
+✅ Плюсы:
+
+Вычищен ряд проблем, в том числе оставшихся с предыдущих итераций, реализован весь недостающий функционал:
+
+- переведено много системных сообщений;
+- убраны лишние импорты;
+- добавлена функция классификации ошибок _classify_cbr_error по аналогии с_classify_moex_error в [main.py](src/cli/main.py), добавлена обертка _fail для упрощения вывода сообщений об ошибках;
+- добавлены тесты для реальной проверки интеграций;
+
+❌ Минусы:
+
+- сохранена функция _fail_validation в [main.py](src/cli/main.py), хотя она является частным случаем _fail.
+
+> [!WARNING]
+> Проблемы из предыдущих итераций и часть документов в ветке 002-moscow-exchange-candles были исправлены только благодаря тому, что задачи из Phase 6 в [tasks.md](specs/002-moscow-exchange-candles/tasks.md) не были завершены в рамках ветки, чего в принципе не должно было случиться при должном внимании. В ветке specs\001-cbr-exchange-rate изменения не сделаны, из-за чего спецификации остались полностью неактуальными.
