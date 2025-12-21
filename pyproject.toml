@@ -17,6 +17,8 @@ dependencies = [
 dev = [
     "pytest>=7.4.0",
     "pytest-mock>=3.11.0",
+    "ruff>=0.5.0",
+    "pyright>=1.1.380",
 ]
 
 [project.scripts]
@@ -29,3 +31,13 @@ python_classes = ["Test*"]
 python_functions = ["test_*"]
 addopts = "-v --tb=short"
 
+[tool.ruff]
+exclude = [".venv", "build"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I"] # Выбор правил (ошибки, опечатки, импорты)
+
+[tool.pyright]
+include = ["src"] # Проверять только папку с исходным кодом
+typeCheckingMode = "basic" # Или "strict" для максимальной строгости
+python.analysis.diagnosticMode = "workspace"

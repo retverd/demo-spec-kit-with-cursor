@@ -13,9 +13,6 @@
   // Автоматически открывать окно результатов тестов после запуска из Testing.
   // Значения обычно: "always" | "failure" | "never".
   "testing.automaticallyOpenPeekView": "always",
-  // Проверки линтером
-  "[python]": {
-    "editor.defaultFormatter": "ms-python.black-formatter"
-  },
-  "editor.formatOnSave": true
+  "editor.formatOnSave": true,
+  "python-envs.pythonProjects": []
 }
